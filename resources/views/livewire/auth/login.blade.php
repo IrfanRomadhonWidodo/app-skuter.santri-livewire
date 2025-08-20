@@ -11,7 +11,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.auth')] class extends Component {
+new #[Layout('components.layouts.auth.split')] class extends Component {
     #[Validate('required|string|email')]
     public string $email = '';
 
@@ -21,7 +21,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public bool $remember = false;
 
     /**
-     * Handle an incoming authentication request.
+     * Menangani permintaan autentikasi yang masuk.
      */
     public function login(): void
     {
@@ -40,11 +40,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('home', absolute: false), navigate: true);
     }
 
     /**
-     * Ensure the authentication request is not rate limited.
+     * Pastikan permintaan autentikasi tidak dibatasi tarifnya.
      */
     protected function ensureIsNotRateLimited(): void
     {
@@ -65,7 +65,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 
     /**
-     * Get the authentication rate limiting throttle key.
+     * Dapatkan kunci pembatas laju autentikasi.
      */
     protected function throttleKey(): string
     {
@@ -74,54 +74,64 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
+    {{-- <x-auth-header :title="__('Selamat Datang')" :description="__('Masukkan email dan kata sandi anda di bawah ini')" /> --}}
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form method="POST" wire:submit="login" class="flex flex-col gap-6">
+    <form wire:submit="login" class="flex flex-col gap-6">
         <!-- Email Address -->
         <flux:input
             wire:model="email"
-            :label="__('Email address')"
+            :label="__('Alamat email')"
             type="email"
             required
             autofocus
             autocomplete="email"
-            placeholder="email@example.com"
+            placeholder="email@gmail.com"
         />
 
         <!-- Password -->
         <div class="relative">
             <flux:input
                 wire:model="password"
-                :label="__('Password')"
+                :label="__('Kata sandi')"
                 type="password"
                 required
                 autocomplete="current-password"
-                :placeholder="__('Password')"
+                :placeholder="__('Kata sandi')"
                 viewable
             />
 
-            @if (Route::has('password.request'))
+            {{-- @if (Route::has('password.request'))
                 <flux:link class="absolute end-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
-                    {{ __('Forgot your password?') }}
+                    {{ __('Lupa kata sandi?') }}
                 </flux:link>
-            @endif
+            @endif --}}
         </div>
 
         <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" :label="__('Remember me')" />
+        <flux:checkbox wire:model="remember" :label="__('Ingatkan saya')" />
 
-        <div class="flex items-center justify-end">
-            <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
+        <div class="flex items-center justify-end w-full">
+            <button 
+                type="submit" 
+                class="w-full rounded-xl px-4 py-2 text-white font-semibold 
+                    bg-gradient-to-r from-green-700 to-green-800 
+                    hover:from-green-600 hover:to-green-700 
+                    active:from-green-700 active:to-green-800 
+                    transition-all duration-300 shadow-md"
+            >
+                {{ __('Masuk') }}
+            </button>
         </div>
+
     </form>
 
-    @if (Route::has('register'))
+    {{-- @if (Route::has('register'))
         <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
-            <span>{{ __('Don\'t have an account?') }}</span>
-            <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
+            {{ __('Tidak memiliki akun?') }}
+            <flux:link :href="route('register')" wire:navigate>{{ __('Buat akun') }}</flux:link>
         </div>
-    @endif
+    @endif --}}
 </div>
