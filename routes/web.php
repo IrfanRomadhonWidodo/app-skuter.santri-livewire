@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Livewire\DashboardController;
+use App\Livewire\Admin\KelolaUser;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -18,6 +19,12 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+
+    // Route CRUD User (hanya admin)
+    Route::get('/admin/users', KelolaUser::class)
+        ->name('admin.users')
+        ->middleware('can:isAdmin'); 
+        // middleware opsional, nanti bisa bikin Gate/Policy untuk admin
 });
 
 require __DIR__.'/auth.php';

@@ -90,10 +90,16 @@
 
         {{-- Menu Kelola User sejajar --}}
         
-        <flux:navlist.item icon="users" href="#"
-            class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 text-white rounded-lg">
-            {{ __('Kelola User') }}
-        </flux:navlist.item>
+<flux:navlist.item 
+    icon="users" 
+    :href="route('admin.users')"
+    :current="request()->routeIs('admin.users')"
+    class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
+           data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
+           text-white rounded-lg">
+    {{ __('Kelola User') }}
+</flux:navlist.item>
+
 
     </flux:navlist.group>
     @endif
