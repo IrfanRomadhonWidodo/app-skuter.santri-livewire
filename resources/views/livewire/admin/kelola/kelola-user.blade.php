@@ -1,9 +1,18 @@
 <div>
     <div class="p-4">
-        <!-- Header dengan Card -->
-        <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-lg shadow-lg p-6 mb-6">
-            <h1 class="text-2xl font-bold mb-2">Kelola Pengguna</h1>
+        <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-2xl shadow-xl mb-6 relative overflow-hidden flex items-center justify-between">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold mb-1">Kelola Pengguna</h1>
+                <p class="text-sm opacity-90">Kelola akun pengguna dan informasi terkait</p>
+            </div>
+
+            <div class="flex-shrink-0">
+                <img src="{{ asset('image/working.png') }}" 
+                    alt="Kelola Pengguna"
+                    class="h-32 w-auto object-contain drop-shadow-md">
+            </div>
         </div>
+
 
     <!-- Card untuk Form dan Tabel -->
     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
