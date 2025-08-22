@@ -47,8 +47,13 @@
 
             <div x-show="open" x-transition
                  class="ml-6 mt-1 flex flex-col rounded-lg shadow-lg">
-                <flux:navlist.item icon="book-open-text" href="#"
-                    class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 text-white rounded-lg">
+                <flux:navlist.item 
+                    icon="book-open-text" 
+                    :href="route('admin.transaksi.pembayaran-tagihan')" 
+                    :current="request()->routeIs('admin.transaksi.pembayaran-tagihan')" 
+                    class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
+                        data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
+                        text-white rounded-lg">
                     {{ __('Pembayaran Tagihan') }}
                 </flux:navlist.item>
                 <flux:navlist.item icon="layout-grid" href="#"

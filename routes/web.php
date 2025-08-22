@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Livewire\DashboardController;
 use App\Livewire\Admin\KelolaUser;
+use App\Livewire\Admin\PembayaranTagihan;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -24,7 +25,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users', KelolaUser::class)
         ->name('admin.users')
         ->middleware('can:isAdmin'); 
-        // middleware opsional, nanti bisa bikin Gate/Policy untuk admin
+
+    // Route Pembayaran Tagihan
+    Route::get('/admin/transaksi/pembayaran-tagihan', PembayaranTagihan::class)
+        ->name('admin.transaksi.pembayaran-tagihan')
+        ->middleware('can:isAdmin'); 
 });
 
 require __DIR__.'/auth.php';
