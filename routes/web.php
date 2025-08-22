@@ -5,6 +5,7 @@ use Livewire\Volt\Volt;
 use App\Livewire\DashboardController;
 use App\Livewire\Admin\KelolaUser;
 use App\Livewire\Admin\PembayaranTagihan;
+use App\Livewire\Admin\KelolaSPP;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -30,6 +31,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/transaksi/pembayaran-tagihan', PembayaranTagihan::class)
         ->name('admin.transaksi.pembayaran-tagihan')
         ->middleware('can:isAdmin'); 
+
+    // Route Kelola SPP
+    Route::get('/admin/administrasi/kelola-spp', KelolaSPP::class)
+        ->name('admin.administrasi.kelola-spp')
+        ->middleware('can:isAdmin');
 });
 
 require __DIR__.'/auth.php';
