@@ -33,8 +33,8 @@ return new class extends Migration
             $table->decimal('terbayar', 15, 2)->default(0);
 
             // Status pembayaran
-            $table->enum('status', ['diproses', 'disetujui', 'ditolak', 'parsial', 'lunas'])
-                ->default('diproses');
+            $table->enum('status', ['parsial','lunas'])
+                  ->nullable();;
 
             $table->timestamps();
             $table->softDeletes();

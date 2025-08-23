@@ -28,6 +28,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_tagihans');
+        Schema::dropIfExists('periodes');
     }
+
 };

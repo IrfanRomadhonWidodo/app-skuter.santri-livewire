@@ -75,7 +75,7 @@ class Tagihan extends Model
                     'program' => $mhs->program,
                     'total_tagihan' => $periode->nominal,
                     'terbayar' => 0,
-                    'status' => 'diproses'
+                    'status' => null,
                 ]
             );
         }

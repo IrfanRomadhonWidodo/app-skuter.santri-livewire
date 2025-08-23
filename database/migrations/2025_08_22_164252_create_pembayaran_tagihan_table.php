@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pembayaran_tagihan', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('pembayaran_id')
                 ->unique()
                 ->constrained('pembayarans')->cascadeOnUpdate()->cascadeOnDelete();
@@ -21,7 +22,7 @@ return new class extends Migration
                 ->unique()
                 ->constrained('tagihans')->cascadeOnUpdate()->cascadeOnDelete();
 
-            $table->decimal('nominal_teralokasi', 15, 2); // bagian dari pembayaran ini untuk tagihan tsb
+            $table->decimal('nominal_teralokasi', 15, 2); // jumlah yang dialokasikan ke tagihan
             $table->timestamps();
             $table->softDeletes();
         });
