@@ -13,31 +13,64 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Mahasiswa
-        User::create([
-            'name' => 'Essay Bina',
-            'email' => 'essaybina31@unu.ac.id',
-            'nim' => '2025001114',
-            'program' => 'Biologi',
-            'password' => Hash::make('bina123'), 
-            'role' => 'mahasiswa',
-        ]);
-
-        User::create([
-            'name' => 'Meilianatita',
-            'email' => 'meilianatita@unu.ac.id',
-            'nim' => '2025002115',
-            'program' => 'Biologi',
-            'password' => Hash::make('meili123'),
-            'role' => 'mahasiswa',
-        ]);
-
         // Admin
-        User::create([
-            'name' => 'Irfan Romadhon',
-            'email' => 'irfanromadhonwidodo86@gmail.com',
-            'password' => Hash::make('irfan123'),
-            'role' => 'admin',
-        ]);
+        $admins = [
+            [
+                'nama' => 'Admin',
+                'email' => 'admin@example.com',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+            ],
+            [
+                'nama' => 'Irfan Romadhon',
+                'email' => 'irfanromadhonwidodo86@gmail.com',
+                'password' => Hash::make('irfan123'),
+                'role' => 'admin',
+            ],
+        ];
+
+        foreach ($admins as $admin) {
+            User::create($admin);
+        }
+
+        // Mahasiswa
+        $mahasiswas = [
+            [
+                'nama' => 'Essay Bina',
+                'email' => 'essaybina31@unu.ac.id',
+                'nim' => '2025001114',
+                'program_studi_id' => 1,
+                'password' => Hash::make('bina123'),
+                'role' => 'mahasiswa',
+            ],
+            [
+                'nama' => 'Meilianatita',
+                'email' => 'meilianatita@unu.ac.id',
+                'nim' => '2025002115',
+                'program_studi_id' => 2,
+                'password' => Hash::make('meili123'),
+                'role' => 'mahasiswa',
+            ],
+            [
+                'nama' => 'Rizky Maulana',
+                'email' => 'rizkymaulana@unu.ac.id',
+                'nim' => '2025003116',
+                'program_studi_id' => 3,
+                'password' => Hash::make('rizky123'),
+                'role' => 'mahasiswa',
+            ],
+            [
+                'nama' => 'Diana',
+                'email' => 'diana@unu.ac.id',
+                'nim' => '2025004117',
+                'program_studi_id' => 4,
+                'password' => Hash::make('diana123'),
+                'role' => 'mahasiswa',
+            ],
+        ];
+
+        foreach ($mahasiswas as $mahasiswa) {
+            User::create($mahasiswa);
+        }
     }
 }
