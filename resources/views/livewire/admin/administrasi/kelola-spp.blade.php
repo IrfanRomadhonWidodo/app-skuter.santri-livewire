@@ -59,10 +59,10 @@
                                         {{ $periode->kode }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $periode->program }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $periode->programStudi->nama }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="text-green-600 font-semibold">
-                                        Rp {{ number_format($periode->nominal_default, 0, ',', '.') }}
+                                        Rp {{ number_format($periode->nominal_awal, 0, ',', '.') }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -162,6 +162,7 @@
                             </label>
                             <select wire:model="program_studi_id" placeholder="Pilih Program Studi"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 @error('program_studi_id') border-red-500 @enderror">
+                                <option value="">Pilih Program Studi</option>
                                 @foreach($program_studis as $program_studi)
                                     <option value="{{ $program_studi->id }}">{{ $program_studi->nama }}</option>
                                 @endforeach
@@ -174,11 +175,11 @@
                         <!-- Nominal Default -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Nominal Default <span class="text-red-500">*</span>
+                                Nominal Awal <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" wire:model="nominal_default" placeholder="0" min="0" step="1000"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 @error('nominal_default') border-red-500 @enderror">
-                            @error('nominal_default') 
+                            <input type="number" wire:model="nominal_awal" placeholder="0" min="0" step="1000"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 @error('nominal_awal') border-red-500 @enderror">
+                            @error('nominal_awal') 
                                 <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> 
                             @enderror
                         </div>
