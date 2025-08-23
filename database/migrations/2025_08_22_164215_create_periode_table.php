@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jenis_tagihans', function (Blueprint $table) {
+        Schema::create('periodes', function (Blueprint $table) {
             $table->id();
             $table->string('kode'); // ex: 2025-2026-1
             $table->string('program'); // disamakan dengan kolom di users

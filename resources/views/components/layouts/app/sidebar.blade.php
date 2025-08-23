@@ -99,6 +99,15 @@
                         text-white rounded-lg">
                     {{ __('Kelola SPP Prodi') }}
                 </flux:navlist.item>
+                <flux:navlist.item 
+                    icon="credit-card" 
+                    :href="route('admin.administrasi.status-mahasiswa')" 
+                    :current="request()->routeIs('admin.administrasi.status-mahasiswa')" 
+                    class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
+                        data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
+                        text-white rounded-lg">
+                    {{ __('Status Mahasiswa') }}
+                </flux:navlist.item>
             </div>
         </div>
 

@@ -7,6 +7,7 @@ use App\Livewire\Admin\KelolaUser;
 use App\Livewire\Admin\PembayaranTagihan;
 use App\Livewire\Admin\KelolaSPP;
 use App\Livewire\Admin\TagihanSPP;
+use App\Livewire\Admin\StatusMahasiswa;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -41,6 +42,11 @@ Route::middleware(['auth'])->group(function () {
     // Route Tagihan SPP
     Route::get('/admin/transaksi/tagihan-spp', TagihanSPP::class)
         ->name('admin.transaksi.tagihan-spp')
+        ->middleware('can:isAdmin');
+
+        // Route Status Mahasiswa
+    Route::get('/admin/administrasi/status-mahasiswa', StatusMahasiswa::class)
+        ->name('admin.administrasi.status-mahasiswa')
         ->middleware('can:isAdmin');
 });
 

@@ -74,6 +74,11 @@ class User extends Authenticatable
         return $this->hasMany(Pembayaran::class, 'penerima_id');
     }
 
+    public function mahasiswaStatus()
+    {
+        return $this->hasOne(MahasiswaStatus::class);
+    }
+
     // 1-1 atau 1-N: User → Beasiswas (sesuai kebutuhan)
     // public function beasiswas()
     // {

@@ -4,7 +4,7 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\JenisTagihan;
+use App\Models\Periode;
 
 class KelolaSPP extends Component
 {
@@ -39,7 +39,7 @@ class KelolaSPP extends Component
     {
         $this->validate();
 
-        JenisTagihan::create([
+        Periode::create([
             'kode'            => $this->kode,
             'program'         => $this->program,
             'nominal_default' => $this->nominal_default,
@@ -47,13 +47,13 @@ class KelolaSPP extends Component
             'periode_selesai' => $this->periode_selesai,
         ]);
 
-        session()->flash('success', 'Jenis Tagihan berhasil ditambahkan.');
+        session()->flash('success', 'Periode SPP berhasil ditambahkan.');
         $this->resetForm();
     }
 
     public function edit($id)
     {
-        $record = JenisTagihan::findOrFail($id);
+        $record = Periode::findOrFail($id);
         $this->selectedId     = $id;
         $this->kode           = $record->kode;
         $this->program        = $record->program;
@@ -68,7 +68,7 @@ class KelolaSPP extends Component
         $this->validate();
 
         if ($this->selectedId) {
-            $record = JenisTagihan::findOrFail($this->selectedId);
+            $record = Periode::findOrFail($this->selectedId);
             $record->update([
                 'kode'            => $this->kode,
                 'program'         => $this->program,
@@ -77,21 +77,21 @@ class KelolaSPP extends Component
                 'periode_selesai' => $this->periode_selesai,
             ]);
 
-            session()->flash('success', 'Jenis Tagihan berhasil diperbarui.');
+            session()->flash('success', 'Periode SPP berhasil diperbarui.');
             $this->resetForm();
         }
     }
 
     public function destroy($id)
     {
-        JenisTagihan::findOrFail($id)->delete();
-        session()->flash('success', 'Jenis Tagihan berhasil dihapus.');
+        Periode::findOrFail($id)->delete();
+        session()->flash('success', 'Periode SPP berhasil dihapus.');
     }
 
     public function render()
     {
         return view('livewire.admin.administrasi.kelola-spp', [
-            'jenisTagihans' => JenisTagihan::orderBy('created_at', 'desc')->paginate(10),
+            'periodes' => Periode::orderBy('created_at', 'desc')->paginate(10),
         ]);
     }
 }

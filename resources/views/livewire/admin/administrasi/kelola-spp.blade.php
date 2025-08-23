@@ -1,5 +1,5 @@
 <div>
-        <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-2xl shadow-xl mb-6 relative overflow-hidden flex items-center justify-between">
+    <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-2xl shadow-xl mb-6 relative overflow-hidden flex items-center justify-between">
         <div class="p-6">
             <h1 class="text-2xl font-bold mb-1">Kelola SPP Program Studi</h1>
             <p class="text-sm opacity-90">Kelola data nominal SPP setiap program studi</p>
@@ -12,8 +12,7 @@
         </div>
     </div>
 
-    
-    <h1 class="text-xl font-bold mb-4">Kelola Jenis Tagihan (SPP)</h1>
+    <h1 class="text-xl font-bold mb-4">Kelola Periode (SPP)</h1>
 
     @if (session()->has('success'))
         <div class="bg-green-200 text-green-800 p-2 rounded mb-4">
@@ -29,27 +28,26 @@
         </div>
 
         <div>
-    <label class="block">Program</label>
-    <select wire:model="program" class="border rounded w-full p-2">
-        <option value="">-- Pilih Program Studi --</option>
-        <option value="Administrasi Publik">Administrasi Publik</option>
-        <option value="Agroteknologi">Agroteknologi</option>
-        <option value="Akuntansi">Akuntansi</option>
-        <option value="Biologi">Biologi</option>
-        <option value="Hukum Syariah">Hukum Syariah</option>
-        <option value="Ilmu Hukum">Ilmu Hukum</option>
-        <option value="Ilmu Perikanan">Ilmu Perikanan</option>
-        <option value="Manajemen">Manajemen</option>
-        <option value="Matematika">Matematika</option>
-        <option value="Pendidikan Agama Islam">Pendidikan Agama Islam</option>
-        <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
-        <option value="Peternakan">Peternakan</option>
-        <option value="Teknik Pertanian dan Biosistem">Teknik Pertanian dan Biosistem</option>
-        <option value="Teknologi Pangan">Teknologi Pangan</option>
-    </select>
-    @error('program') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-</div>
-
+            <label class="block">Program</label>
+            <select wire:model="program" class="border rounded w-full p-2">
+                <option value="">-- Pilih Program Studi --</option>
+                <option value="Administrasi Publik">Administrasi Publik</option>
+                <option value="Agroteknologi">Agroteknologi</option>
+                <option value="Akuntansi">Akuntansi</option>
+                <option value="Biologi">Biologi</option>
+                <option value="Hukum Syariah">Hukum Syariah</option>
+                <option value="Ilmu Hukum">Ilmu Hukum</option>
+                <option value="Ilmu Perikanan">Ilmu Perikanan</option>
+                <option value="Manajemen">Manajemen</option>
+                <option value="Matematika">Matematika</option>
+                <option value="Pendidikan Agama Islam">Pendidikan Agama Islam</option>
+                <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
+                <option value="Peternakan">Peternakan</option>
+                <option value="Teknik Pertanian dan Biosistem">Teknik Pertanian dan Biosistem</option>
+                <option value="Teknologi Pangan">Teknologi Pangan</option>
+            </select>
+            @error('program') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+        </div>
 
         <div>
             <label class="block">Nominal Default</label>
@@ -90,19 +88,19 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($jenisTagihans as $tagihan)
+            @forelse ($periodes as $periode)
                 <tr>
-                    <td class="border p-2">{{ $tagihan->kode }}</td>
-                    <td class="border p-2">{{ $tagihan->program }}</td>
-                    <td class="border p-2">Rp {{ number_format($tagihan->nominal_default, 0, ',', '.') }}</td>
+                    <td class="border p-2">{{ $periode->kode }}</td>
+                    <td class="border p-2">{{ $periode->program }}</td>
+                    <td class="border p-2">Rp {{ number_format($periode->nominal_default, 0, ',', '.') }}</td>
                     <td class="border p-2">
-                        {{ $tagihan->periode_mulai ? $tagihan->periode_mulai->format('d/m/Y') : '-' }}
+                        {{ $periode->periode_mulai ? $periode->periode_mulai->format('d/m/Y') : '-' }}
                         s/d
-                        {{ $tagihan->periode_selesai ? $tagihan->periode_selesai->format('d/m/Y') : '-' }}
+                        {{ $periode->periode_selesai ? $periode->periode_selesai->format('d/m/Y') : '-' }}
                     </td>
                     <td class="border p-2">
-                        <button wire:click="edit({{ $tagihan->id }})" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
-                        <button wire:click="destroy({{ $tagihan->id }})" class="bg-red-500 text-white px-2 py-1 rounded">Hapus</button>
+                        <button wire:click="edit({{ $periode->id }})" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
+                        <button wire:click="destroy({{ $periode->id }})" class="bg-red-500 text-white px-2 py-1 rounded">Hapus</button>
                     </td>
                 </tr>
             @empty
@@ -114,6 +112,6 @@
     </table>
 
     <div class="mt-3">
-        {{ $jenisTagihans->links() }}
+        {{ $periodes->links() }}
     </div>
 </div>

@@ -14,33 +14,39 @@ return new class extends Migration
         Schema::create('tagihans', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id') // mahasiswa
-                  ->constrained('users')
-                  ->cascadeOnUpdate()
-                  ->cascadeOnDelete();
+            // Relasi ke user (mahasiswa)
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
 
-            $table->foreignId('jenis_tagihan_id')
-                  ->constrained('jenis_tagihans')
-                  ->cascadeOnUpdate()
-                  ->restrictOnDelete();
+            // Relasi ke periode (program + nominal SPP)
+$table->foreignId('periode_id')
+      ->constrained('periodes')
+      ->cascadeOnDelete()
+      ->cascadeOnUpdate();
 
-            $table->string('nim');             // snapshot stabil di laporan
-            $table->string('nama_mahasiswa');  // snapshot
-            $table->string('program');         // snapshot
+            // Snapshot data mahasiswa
+            $table->string('nim');
+            $table->string('nama_mahasiswa');
+            $table->string('program');
 
-            $table->decimal('total_tagihan', 15, 2); 
+            // Nominal tagihan dan pembayaran
+            $table->decimal('total_tagihan', 15, 2);
             $table->decimal('terbayar', 15, 2)->default(0);
 
+            // Status pembayaran
             $table->enum('status', ['diproses','disetujui','ditolak','parsial','lunas'])
                   ->default('diproses');
 
-            $table->date('tanggal_jatuh_tempo')->nullable();
-            $table->timestamps(); 
+            $table->timestamps();
             $table->softDeletes();
 
-            $table->unique(['user_id', 'jenis_tagihan_id']); 
+            // Pastikan tidak ada duplikat user + periode
+            $table->unique(['user_id', 'periode_id']);
         });
     }
+
     /**
      * Reverse the migrations.
      */

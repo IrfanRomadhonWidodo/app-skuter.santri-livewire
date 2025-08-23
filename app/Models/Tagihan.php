@@ -10,37 +10,71 @@ class Tagihan extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'tagihans';
-
     protected $fillable = [
         'user_id',
-        'jenis_tagihan_id',
+        'periode_id',
         'nim',
         'nama_mahasiswa',
         'program',
         'total_tagihan',
         'terbayar',
         'status',
-        'tanggal_jatuh_tempo',
     ];
 
-    // Relasi ke User (N:1)
+    // Relasi ke User
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
-    // Relasi ke JenisTagihan (N:1)
-    public function jenisTagihan()
+    // Relasi ke Periode
+    public function periode()
     {
-        return $this->belongsTo(JenisTagihan::class, 'jenis_tagihan_id');
+        return $this->belongsTo(Periode::class);
     }
 
-    // Relasi N-M ke Pembayaran (via Pivot)
+    // Relasi ke Pembayaran via pivot
     public function pembayarans()
     {
         return $this->belongsToMany(Pembayaran::class, 'pembayaran_tagihan', 'tagihan_id', 'pembayaran_id')
                     ->withPivot('nominal_teralokasi')
                     ->withTimestamps();
+    }
+
+    // Helper sisa tagihan
+    public function getSisaAttribute()
+    {
+        return $this->total_tagihan - $this->terbayar;
+    }
+
+    // Scope mahasiswa aktif
+    public function scopeAktif($query)
+    {
+        return $query->whereHas('user', function ($q) {
+            $q->where('role', 'mahasiswaStatus')->where('status', 'aktif');
+        });
+    }
+
+    // Auto-generate tagihan untuk periode baru
+    public static function generateForPeriode($periode)
+    {
+        $mahasiswas = User::where('role', 'mahasiswa')
+                          ->where('program', $periode->program)
+                          ->whereHas('mahasiswa', fn($q) => $q->where('status', 'aktif'))
+                          ->get();
+
+        foreach ($mahasiswas as $mhs) {
+            self::updateOrCreate(
+                ['user_id' => $mhs->id, 'periode_id' => $periode->id],
+                [
+                    'nim' => $mhs->mahasiswa->nim,
+                    'nama_mahasiswa' => $mhs->name,
+                    'program' => $mhs->program,
+                    'total_tagihan' => $periode->nominal,
+                    'terbayar' => 0,
+                    'status' => 'diproses'
+                ]
+            );
+        }
     }
 }

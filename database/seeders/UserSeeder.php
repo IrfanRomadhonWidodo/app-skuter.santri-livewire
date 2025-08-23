@@ -16,8 +16,19 @@ class UserSeeder extends Seeder
         // Mahasiswa
         User::create([
             'name' => 'Essay Bina',
-            'email' => 'essaybina30@example.com',
+            'email' => 'essaybina31@unu.ac.id',
+            'nim' => '2025001114',
+            'program' => 'Biologi',
             'password' => Hash::make('bina123'), 
+            'role' => 'mahasiswa',
+        ]);
+
+        User::create([
+            'name' => 'Meilianatita',
+            'email' => 'meilianatita@unu.ac.id',
+            'nim' => '2025002115',
+            'program' => 'Biologi',
+            'password' => Hash::make('meili123'),
             'role' => 'mahasiswa',
         ]);
 
