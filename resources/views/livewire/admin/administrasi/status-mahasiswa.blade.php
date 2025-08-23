@@ -46,9 +46,9 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($statuses as $row)
                             <tr class="hover:bg-gray-50" wire:key="status-{{ $row->id }}">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $row->user->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $row->user->nim ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $row->user->program ?? '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $row->mahasiswa->name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $row->mahasiswa->nim ?? '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $row->mahasiswa->programStudi->nama ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="text-sm text-gray-900">{{ $row->keterangan ?? '-' }}</span>
                                 </td>
