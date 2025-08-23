@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -10,12 +11,12 @@ use Illuminate\Support\Str;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
         'nim',
-        'program',
+        'program_studi_id',
         'email',
         'password',
         'role',
@@ -59,13 +60,18 @@ class User extends Authenticatable
     // 1-N: User → Tagihans
     public function tagihans()
     {
-        return $this->hasMany(Tagihan::class, 'user_id');
+        return $this->hasMany(Tagihan::class);
+    }
+
+    public function programStudi()
+    {
+        return $this->belongsTo(ProgramStudi::class);
     }
 
     // 1-N: User → Pembayarans (mahasiswa yang bayar)
     public function pembayarans()
     {
-        return $this->hasMany(Pembayaran::class, 'user_id');
+        return $this->hasMany(Pembayaran::class, 'mahasiswa_id');
     }
 
     // 1-N: User → Pembayaran diterima (penerima/admin)
@@ -76,13 +82,13 @@ class User extends Authenticatable
 
     public function mahasiswaStatus()
     {
-        return $this->hasOne(MahasiswaStatus::class);
+        return $this->hasOne(MahasiswaStatus::class, 'mahasiswa_id');
     }
 
     // 1-1 atau 1-N: User → Beasiswas (sesuai kebutuhan)
     // public function beasiswas()
     // {
-    //     return $this->hasMany(Beasiswa::class, 'user_id');
+    //     return $this->hasMany(Beasiswa::class);
     //     // kalau 1-1 ganti dengan:
     //     // return $this->hasOne(Beasiswa::class, 'user_id');
     // }

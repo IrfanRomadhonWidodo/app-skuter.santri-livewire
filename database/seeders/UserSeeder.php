@@ -13,6 +13,26 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Admin
+        $admins = [
+            [
+                'name' => 'Admin',
+                'email' => 'admin@example.com',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Irfan Romadhon',
+                'email' => 'irfanromadhonwidodo86@gmail.com',
+                'password' => Hash::make('irfan123'),
+                'role' => 'admin',
+            ],
+        ];
+
+        foreach ($admins as $admin) {
+            User::create($admin);
+        }
+
         // Mahasiswa
         User::create([
             'name' => 'Essay Bina',

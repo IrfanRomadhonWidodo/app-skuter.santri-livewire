@@ -40,7 +40,7 @@ class StatusMahasiswa extends Component
         $mahasiswas = User::where('role', 'mahasiswa')->get();
         foreach ($mahasiswas as $mhs) {
             MahasiswaStatus::firstOrCreate(
-                ['user_id' => $mhs->id],
+                ['mahasiswa_id' => $mhs->id],
                 ['status' => 'aktif', 'keterangan' => null]
             );
         }
@@ -115,7 +115,7 @@ class StatusMahasiswa extends Component
 
     public function render()
     {
-        $statuses = MahasiswaStatus::with('user')
+        $statuses = MahasiswaStatus::with('mahasiswa.programStudi')
             ->when($this->search, function($query) {
                 $query->whereHas('user', function($userQuery) {
                     $userQuery->where('name', 'like', '%' . $this->search . '%')

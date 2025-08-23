@@ -26,8 +26,7 @@ return new class extends Migration
 
             $table->decimal('nominal_teralokasi', 15, 2); // jumlah yang dialokasikan ke tagihan
             $table->timestamps();
-
-            $table->unique(['pembayaran_id','tagihan_id']); // 1 baris per kombinasi
+            $table->softDeletes();
         });
     }
 

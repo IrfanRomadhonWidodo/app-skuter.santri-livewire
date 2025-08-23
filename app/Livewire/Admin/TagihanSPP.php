@@ -75,9 +75,9 @@ class TagihanSPP extends Component
 
     public function render()
     {
-        $tagihans = Tagihan::with(['user', 'periode'])
-                           ->orderBy('created_at', 'desc')
-                           ->paginate(10);
+        $tagihans = Tagihan::with(['mahasiswa', 'periode'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('livewire.admin.transaksi.tagihan-spp', [
             'tagihans' => $tagihans

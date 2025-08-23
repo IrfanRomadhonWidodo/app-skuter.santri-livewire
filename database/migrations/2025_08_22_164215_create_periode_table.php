@@ -13,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('periodes', function (Blueprint $table) {
             $table->id();
-            $table->string('kode'); // ex: 2025-2026-1
-            $table->string('program'); // disamakan dengan kolom di users
-            $table->decimal('nominal_default', 15, 2); // default per prodi
+            $table->string('kode')->unique(); // ex: 2025-2026-1
+            $table->foreignId('program_studi_id')->constrained('program_studis')->onDelete('cascade');
+            $table->decimal('nominal_awal', 15, 2); // default per prodi
             $table->date('periode_mulai')->nullable(); // opsional (untuk info rentang)
             $table->date('periode_selesai')->nullable(); // opsional
             $table->timestamps();
-
-            $table->unique(['kode', 'program']); // 1 kode unik per prodi
+            $table->softDeletes();
         });
     }
 
