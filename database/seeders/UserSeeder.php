@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Meilianatita',
+            'name' => 'Meiliana Tita',
             'email' => 'meilianatita@unu.ac.id',
             'nim' => '2025002115',
             'program' => 'Biologi',

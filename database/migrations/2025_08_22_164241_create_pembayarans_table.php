@@ -15,17 +15,20 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id') // mahasiswa yang bayar
-                  ->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
+                  ->constrained('users')
+                  ->cascadeOnUpdate()
+                  ->cascadeOnDelete();
 
             $table->foreignId('penerima_id') // petugas/admin yang menerima
-                  ->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
+                  ->constrained('users')
+                  ->cascadeOnUpdate()
+                  ->restrictOnDelete();
 
-            $table->date('tanggal_bayar')->nullable(); // dari form
-            $table->decimal('jumlah', 15, 2); // berapa yang disetor user (parsial boleh)
-            $table->string('cara_bayar'); // transfer/cash/dll (boleh nanti diganti enum)
-            $table->string('bukti_pembayaran')->nullable(); // path JPG/PNG
-            $table->string('kwitansi')->nullable(); // path PDF/IMG kwitansi setelah ACC
-
+            $table->date('tanggal_bayar'); // dari form
+            $table->decimal('jumlah', 15, 2); // nominal bayar (parsial boleh)
+            $table->enum('cara_bayar', ['transfer', 'cash', 'alokasi']); // metode bayar
+            $table->string('bukti_pembayaran')->nullable(); // file bukti JPG/PNG
+            $table->string('kwitansi')->nullable(); // path kwitansi PDF/IMG setelah ACC
             $table->enum('status', ['menunggu','disetujui','ditolak'])->default('menunggu');
             $table->timestamp('approved_at')->nullable();
 
