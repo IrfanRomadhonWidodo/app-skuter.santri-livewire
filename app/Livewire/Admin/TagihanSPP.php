@@ -57,8 +57,6 @@ class TagihanSPP extends Component
             }
         }
     }
-}
-
 
     public function render()
     {

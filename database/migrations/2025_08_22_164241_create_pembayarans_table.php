@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->date('tanggal_bayar')->nullable(); // dari form
             $table->decimal('jumlah', 15, 2); // berapa yang disetor user (parsial boleh)
-            $table->string('cara_bayar'); // transfer/cash/dll (boleh nanti diganti enum)
+            $table->enum('cara_bayar', ['transfer', 'cash', 'alokasi']); // transfer/cash/alokasi
             $table->string('bukti_pembayaran')->nullable(); // path JPG/PNG
             $table->string('kwitansi')->nullable(); // path PDF/IMG kwitansi setelah ACC
 
