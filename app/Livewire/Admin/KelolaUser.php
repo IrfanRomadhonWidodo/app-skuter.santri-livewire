@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\ProgramStudi;
 use Livewire\Component;
 use App\Models\User;
 use Livewire\WithPagination;
@@ -12,7 +13,7 @@ class KelolaUser extends Component
     use WithPagination;
 
     public $userId;
-    public $name, $nim, $program, $email, $password, $role = 'mahasiswa';
+    public $name, $nim, $program_studi_id, $email, $password, $role = 'mahasiswa';
     public $isEdit = false;
     public $showModal = false;
     public $search = '';
@@ -20,7 +21,7 @@ class KelolaUser extends Component
     protected $rules = [
         'name'     => 'required|string|max:255',
         'nim'      => 'nullable|string|max:50',
-        'program'  => 'nullable|string|max:100',
+        'program_studi_id'  => 'nullable|exists:program_studis,id',
         'email'    => 'required|email|unique:users,email',
         'password' => 'required|min:6',
         'role'     => 'required|in:mahasiswa,admin',
@@ -32,15 +33,16 @@ class KelolaUser extends Component
 
     public function render()
     {
-        $users = User::when($this->search, function ($query) {
+        $users = User::with('programStudi')->when($this->search, function ($query) {
             $query->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('nim', 'like', '%' . $this->search . '%')
-                  ->orWhere('program', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
+                ->orWhere('nim', 'like', '%' . $this->search . '%')
+                ->orWhere('program_studi_id', 'like', '%' . $this->search . '%')
+                ->orWhere('email', 'like', '%' . $this->search . '%');
         })->latest()->paginate(10);
 
         return view('livewire.admin.kelola.kelola-user', [
             'users' => $users,
+            'program_studis' => ProgramStudi::all(),
         ]);
     }
 
@@ -59,7 +61,7 @@ class KelolaUser extends Component
 
     public function resetForm()
     {
-        $this->reset(['userId','name','nim','program','email','password','isEdit']);
+        $this->reset(['userId', 'name', 'nim', 'program_studi_id', 'email', 'password', 'isEdit']);
         $this->role = 'mahasiswa';
         $this->resetErrorBag();
     }
@@ -72,7 +74,7 @@ class KelolaUser extends Component
             User::create([
                 'name'     => $this->name,
                 'nim'      => $this->nim,
-                'program'  => $this->program,
+                'program_studi_id'  => $this->program_studi_id,
                 'email'    => $this->email,
                 'password' => Hash::make($this->password),
                 'role'     => $this->role,
@@ -80,7 +82,6 @@ class KelolaUser extends Component
 
             $this->closeModal();
             $this->dispatch('showSuccessMessage', ['message' => 'User berhasil ditambahkan.']);
-            
         } catch (\Exception $e) {
             $this->dispatch('showErrorMessage', ['message' => 'Gagal menambahkan user: ' . $e->getMessage()]);
         }
@@ -94,14 +95,13 @@ class KelolaUser extends Component
             $this->userId   = $user->id;
             $this->name     = $user->name;
             $this->nim      = $user->nim;
-            $this->program  = $user->program;
+            $this->program_studi_id  = $user->program_studi_id;
             $this->email    = $user->email;
             $this->role     = $user->role;
             $this->password = ''; // Reset password field
 
             $this->isEdit = true;
             $this->showModal = true;
-            
         } catch (\Exception $e) {
             $this->dispatch('showErrorMessage', ['message' => 'User tidak ditemukan.']);
         }
@@ -115,8 +115,8 @@ class KelolaUser extends Component
             $rules = [
                 'name'     => 'required|string|max:255',
                 'nim'      => 'nullable|string|max:50',
-                'program'  => 'nullable|string|max:100',
-                'email'    => 'required|email|unique:users,email,'.$user->id,
+                'program_studi_id'  => 'nullable|exists:program_studis,id',
+                'email'    => 'required|email|unique:users,email,' . $user->id,
                 'role'     => 'required|in:mahasiswa,admin',
             ];
 
@@ -129,7 +129,7 @@ class KelolaUser extends Component
             $data = [
                 'name'    => $this->name,
                 'nim'     => $this->nim,
-                'program' => $this->program,
+                'program_studi_id' => $this->program_studi_id,
                 'email'   => $this->email,
                 'role'    => $this->role,
             ];
@@ -142,7 +142,6 @@ class KelolaUser extends Component
 
             $this->closeModal();
             $this->dispatch('showSuccessMessage', ['message' => 'User berhasil diperbarui.']);
-            
         } catch (\Exception $e) {
             $this->dispatch('showErrorMessage', ['message' => 'Gagal memperbarui user: ' . $e->getMessage()]);
         }

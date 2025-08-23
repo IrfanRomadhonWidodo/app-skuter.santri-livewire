@@ -16,13 +16,13 @@ class UserSeeder extends Seeder
         // Admin
         $admins = [
             [
-                'nama' => 'Admin',
+                'name' => 'Admin',
                 'email' => 'admin@example.com',
                 'password' => Hash::make('admin123'),
                 'role' => 'admin',
             ],
             [
-                'nama' => 'Irfan Romadhon',
+                'name' => 'Irfan Romadhon',
                 'email' => 'irfanromadhonwidodo86@gmail.com',
                 'password' => Hash::make('irfan123'),
                 'role' => 'admin',
@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
         // Mahasiswa
         $mahasiswas = [
             [
-                'nama' => 'Essay Bina',
+                'name' => 'Essay Bina',
                 'email' => 'essaybina31@unu.ac.id',
                 'nim' => '2025001114',
                 'program_studi_id' => 1,
@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
                 'role' => 'mahasiswa',
             ],
             [
-                'nama' => 'Meilianatita',
+                'name' => 'Meilianatita',
                 'email' => 'meilianatita@unu.ac.id',
                 'nim' => '2025002115',
                 'program_studi_id' => 2,
@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
                 'role' => 'mahasiswa',
             ],
             [
-                'nama' => 'Rizky Maulana',
+                'name' => 'Rizky Maulana',
                 'email' => 'rizkymaulana@unu.ac.id',
                 'nim' => '2025003116',
                 'program_studi_id' => 3,
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
                 'role' => 'mahasiswa',
             ],
             [
-                'nama' => 'Diana',
+                'name' => 'Diana',
                 'email' => 'diana@unu.ac.id',
                 'nim' => '2025004117',
                 'program_studi_id' => 4,

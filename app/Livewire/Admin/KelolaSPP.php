@@ -5,23 +5,24 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Periode;
+use App\Models\ProgramStudi;
 
 class KelolaSPP extends Component
 {
     use WithPagination;
 
-    public $kode, $program, $nominal_default, $periode_mulai, $periode_selesai;
+    public $kode, $program_studi_id, $nominal_default, $periode_mulai, $periode_selesai;
     public $selectedId = null;
     public $isEdit = false;
     public $showModal = false;
     public $search = '';
 
     protected $rules = [
-        'kode'            => 'required|string|max:50',
-        'program'         => 'required|string|max:100',
-        'nominal_default' => 'required|numeric|min:0',
-        'periode_mulai'   => 'nullable|date',
-        'periode_selesai' => 'nullable|date|after_or_equal:periode_mulai',
+        'kode'              => 'required|string|max:50',
+        'program_studi_id'  => 'required|exists:program_studis,id',
+        'nominal_default'   => 'required|numeric|min:0',
+        'periode_mulai'     => 'nullable|date',
+        'periode_selesai'   => 'nullable|date|after_or_equal:periode_mulai',
     ];
 
     protected $listeners = [
@@ -51,7 +52,7 @@ class KelolaSPP extends Component
     {
         $this->reset([
             'kode',
-            'program',
+            'program_studi_id',
             'nominal_default',
             'periode_mulai',
             'periode_selesai',
@@ -67,11 +68,11 @@ class KelolaSPP extends Component
 
         try {
             Periode::create([
-                'kode'            => $this->kode,
-                'program'         => $this->program,
-                'nominal_default' => $this->nominal_default,
-                'periode_mulai'   => $this->periode_mulai,
-                'periode_selesai' => $this->periode_selesai,
+                'kode'              => $this->kode,
+                'program_studi_id'  => $this->program_studi_id,
+                'nominal_default'   => $this->nominal_default,
+                'periode_mulai'     => $this->periode_mulai,
+                'periode_selesai'   => $this->periode_selesai,
             ]);
 
             $this->dispatch('showSuccessMessage', ['message' => 'Periode SPP berhasil ditambahkan.']);
@@ -87,7 +88,7 @@ class KelolaSPP extends Component
             $record = Periode::findOrFail($id);
             $this->selectedId     = $id;
             $this->kode           = $record->kode;
-            $this->program        = $record->program;
+            $this->program_studi_id        = $record->program_studi_id;
             $this->nominal_default = $record->nominal_default;
             $this->periode_mulai  = $record->periode_mulai ? $record->periode_mulai->format('Y-m-d') : null;
             $this->periode_selesai = $record->periode_selesai ? $record->periode_selesai->format('Y-m-d') : null;
@@ -106,11 +107,11 @@ class KelolaSPP extends Component
             if ($this->selectedId) {
                 $record = Periode::findOrFail($this->selectedId);
                 $record->update([
-                    'kode'            => $this->kode,
-                    'program'         => $this->program,
-                    'nominal_default' => $this->nominal_default,
-                    'periode_mulai'   => $this->periode_mulai,
-                    'periode_selesai' => $this->periode_selesai,
+                    'kode'              => $this->kode,
+                    'program_studi_id'  => $this->program_studi_id,
+                    'nominal_default'   => $this->nominal_default,
+                    'periode_mulai'     => $this->periode_mulai,
+                    'periode_selesai'   => $this->periode_selesai,
                 ]);
 
                 $this->dispatch('showSuccessMessage', ['message' => 'Periode SPP berhasil diperbarui.']);
@@ -141,14 +142,15 @@ class KelolaSPP extends Component
         $query = Periode::query();
 
         if ($this->search) {
-            $query->where(function($q) {
+            $query->where(function ($q) {
                 $q->where('kode', 'like', '%' . $this->search . '%')
-                  ->orWhere('program', 'like', '%' . $this->search . '%');
+                    ->orWhere('program_studi_id', 'like', '%' . $this->search . '%');
             });
         }
 
         return view('livewire.admin.administrasi.kelola-spp', [
             'periodes' => $query->orderBy('created_at', 'desc')->paginate(10),
+            'program_studis' => ProgramStudi::all(),
         ]);
     }
 }

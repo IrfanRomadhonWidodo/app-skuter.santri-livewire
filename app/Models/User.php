@@ -16,7 +16,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'nim',
-        'program',
+        'program_studi_id',
         'email',
         'password',
         'role',
@@ -61,6 +61,11 @@ class User extends Authenticatable
     public function tagihans()
     {
         return $this->hasMany(Tagihan::class);
+    }
+
+    public function programStudi()
+    {
+        return $this->belongsTo(ProgramStudi::class);
     }
 
     // 1-N: User → Pembayarans (mahasiswa yang bayar)

@@ -160,25 +160,13 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Program Studi <span class="text-red-500">*</span>
                             </label>
-                            <select wire:model="program"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 @error('program') border-red-500 @enderror">
-                                <option value="">-- Pilih Program Studi --</option>
-                                <option value="Administrasi Publik">Administrasi Publik</option>
-                                <option value="Agroteknologi">Agroteknologi</option>
-                                <option value="Akuntansi">Akuntansi</option>
-                                <option value="Biologi">Biologi</option>
-                                <option value="Hukum Syariah">Hukum Syariah</option>
-                                <option value="Ilmu Hukum">Ilmu Hukum</option>
-                                <option value="Ilmu Perikanan">Ilmu Perikanan</option>
-                                <option value="Manajemen">Manajemen</option>
-                                <option value="Matematika">Matematika</option>
-                                <option value="Pendidikan Agama Islam">Pendidikan Agama Islam</option>
-                                <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
-                                <option value="Peternakan">Peternakan</option>
-                                <option value="Teknik Pertanian dan Biosistem">Teknik Pertanian dan Biosistem</option>
-                                <option value="Teknologi Pangan">Teknologi Pangan</option>
+                            <select wire:model="program_studi_id" placeholder="Pilih Program Studi"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 @error('program_studi_id') border-red-500 @enderror">
+                                @foreach($program_studis as $program_studi)
+                                    <option value="{{ $program_studi->id }}">{{ $program_studi->nama }}</option>
+                                @endforeach
                             </select>
-                            @error('program') 
+                            @error('program_studi_id') 
                                 <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> 
                             @enderror
                         </div>
