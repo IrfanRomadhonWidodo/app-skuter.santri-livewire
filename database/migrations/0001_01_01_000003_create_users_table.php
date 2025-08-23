@@ -13,15 +13,16 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('nama');
             $table->string('nim')->nullable(); // opsional, kalau mahasiswa wajib bisa dibuat not nullable
-            $table->string('program')->nullable();
+            $table->foreignId('program_studi_id')->nullable('program_studis')->constrained()->onDelete('cascade');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['mahasiswa', 'admin'])->default('mahasiswa'); // default mahasiswa
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
 

@@ -15,35 +15,29 @@ return new class extends Migration
             $table->id();
 
             // Relasi ke user (mahasiswa)
-            $table->foreignId('user_id')
+            $table->foreignId('mahasiswa_id')
+                ->unique()
                 ->constrained('users')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
             // Relasi ke periode (program + nominal SPP)
-$table->foreignId('periode_id')
-      ->constrained('periodes')
-      ->cascadeOnDelete()
-      ->cascadeOnUpdate();
-
-            // Snapshot data mahasiswa
-            $table->string('nim');
-            $table->string('nama_mahasiswa');
-            $table->string('program');
+            $table->foreignId('periode_id')
+                ->unique()
+                ->constrained('periodes')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             // Nominal tagihan dan pembayaran
             $table->decimal('total_tagihan', 15, 2);
             $table->decimal('terbayar', 15, 2)->default(0);
 
             // Status pembayaran
-            $table->enum('status', ['diproses','disetujui','ditolak','parsial','lunas'])
-                  ->default('diproses');
+            $table->enum('status', ['diproses', 'disetujui', 'ditolak', 'parsial', 'lunas'])
+                ->default('diproses');
 
             $table->timestamps();
             $table->softDeletes();
-
-            // Pastikan tidak ada duplikat user + periode
-            $table->unique(['user_id', 'periode_id']);
         });
     }
 

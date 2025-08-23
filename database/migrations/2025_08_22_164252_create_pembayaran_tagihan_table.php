@@ -14,15 +14,16 @@ return new class extends Migration
         Schema::create('pembayaran_tagihan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pembayaran_id')
-                  ->constrained('pembayarans')->cascadeOnUpdate()->cascadeOnDelete();
+                ->unique()
+                ->constrained('pembayarans')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->foreignId('tagihan_id')
-                  ->constrained('tagihans')->cascadeOnUpdate()->cascadeOnDelete();
+                ->unique()
+                ->constrained('tagihans')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->decimal('nominal_teralokasi', 15, 2); // bagian dari pembayaran ini untuk tagihan tsb
             $table->timestamps();
-
-            $table->unique(['pembayaran_id','tagihan_id']); // 1 baris per kombinasi
+            $table->softDeletes();
         });
     }
 

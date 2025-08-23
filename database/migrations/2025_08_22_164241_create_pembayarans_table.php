@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id') // mahasiswa yang bayar
-                  ->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('mahasiswa_id') // mahasiswa yang bayar
+                ->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->foreignId('penerima_id') // petugas/admin yang menerima
-                  ->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
+                ->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
 
             $table->date('tanggal_bayar')->nullable(); // dari form
             $table->decimal('jumlah', 15, 2); // berapa yang disetor user (parsial boleh)
@@ -26,8 +26,8 @@ return new class extends Migration
             $table->string('bukti_pembayaran')->nullable(); // path JPG/PNG
             $table->string('kwitansi')->nullable(); // path PDF/IMG kwitansi setelah ACC
 
-            $table->enum('status', ['menunggu','disetujui','ditolak'])->default('menunggu');
-            $table->timestamp('approved_at')->nullable();
+            $table->enum('status', ['menunggu', 'disetujui', 'ditolak'])->default('menunggu');
+            $table->date('tanggal_persetujuan')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

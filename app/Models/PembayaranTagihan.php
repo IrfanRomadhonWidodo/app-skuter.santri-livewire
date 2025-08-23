@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PembayaranTagihan extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'pembayaran_tagihan';
 
@@ -20,12 +21,12 @@ class PembayaranTagihan extends Model
     // Relasi ke Pembayaran
     public function pembayaran()
     {
-        return $this->belongsTo(Pembayaran::class, 'pembayaran_id');
+        return $this->belongsTo(Pembayaran::class);
     }
 
     // Relasi ke Tagihan
     public function tagihan()
     {
-        return $this->belongsTo(Tagihan::class, 'tagihan_id');
+        return $this->belongsTo(Tagihan::class);
     }
 }

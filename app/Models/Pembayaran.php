@@ -13,7 +13,7 @@ class Pembayaran extends Model
     protected $table = 'pembayarans';
 
     protected $fillable = [
-        'user_id',
+        'mahasiswa_id',
         'penerima_id',
         'tanggal_bayar',
         'jumlah',
@@ -25,9 +25,9 @@ class Pembayaran extends Model
     ];
 
     // Relasi ke User (mahasiswa yang bayar)
-    public function user()
+    public function mahasiswa()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'mahasiswa_id');
     }
 
     // Relasi ke User (penerima/admin)

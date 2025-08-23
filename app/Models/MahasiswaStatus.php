@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MahasiswaStatus extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'mahasiswa_statuses';
 
     protected $fillable = [
-        'user_id',
+        'mahasiswa_id',
         'status',
         'keterangan',
     ];
@@ -20,8 +21,8 @@ class MahasiswaStatus extends Model
     /**
      * Relasi ke User (mahasiswa).
      */
-    public function user()
+    public function mahasiswa()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'mahasiswa_id');
     }
 }

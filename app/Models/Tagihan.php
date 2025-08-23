@@ -11,26 +11,28 @@ class Tagihan extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'user_id',
+        'mahasiswa_id',
         'periode_id',
-        'nim',
-        'nama_mahasiswa',
-        'program',
         'total_tagihan',
         'terbayar',
         'status',
     ];
 
-    // Relasi ke User
-    public function user()
+    // Relasi ke Mahasiswa
+    public function mahasiswa()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'mahasiswa_id');
     }
 
     // Relasi ke Periode
     public function periode()
     {
         return $this->belongsTo(Periode::class);
+    }
+
+    public function pembayaranTagihan()
+    {
+        return $this->hasMany(PembayaranTagihan::class);
     }
 
     // Relasi ke Pembayaran via pivot
