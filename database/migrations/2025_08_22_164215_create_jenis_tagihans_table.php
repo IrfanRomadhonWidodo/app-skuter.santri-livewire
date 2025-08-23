@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('kode'); // ex: 2025-2026-1
             $table->string('program'); // disamakan dengan kolom di users
             $table->decimal('nominal_default', 15, 2); // default per prodi
-            $table->unsignedSmallInteger('semester')->nullable(); // 1 / 2 (opsional)
             $table->date('periode_mulai')->nullable(); // opsional (untuk info rentang)
             $table->date('periode_selesai')->nullable(); // opsional
             $table->timestamps();

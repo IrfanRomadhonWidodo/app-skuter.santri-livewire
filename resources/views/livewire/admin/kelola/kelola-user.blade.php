@@ -158,8 +158,25 @@
                         <!-- Program Studi -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
-                            <input type="text" wire:model="program" placeholder="Program studi"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 @error('program') border-red-500 @enderror">
+                            <select wire:model="program"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 @error('program') border-red-500 @enderror"
+                                size="1" style="max-height: 150px; overflow-y: auto;">
+                                <option value="">-- Pilih Program Studi --</option>
+                                <option value="Administrasi Publik">Administrasi Publik</option>
+                                <option value="Agroteknologi">Agroteknologi</option>
+                                <option value="Akuntansi">Akuntansi</option>
+                                <option value="Biologi">Biologi</option>
+                                <option value="Hukum Syariah">Hukum Syariah</option>
+                                <option value="Ilmu Hukum">Ilmu Hukum</option>
+                                <option value="Ilmu Perikanan">Ilmu Perikanan</option>
+                                <option value="Manajemen">Manajemen</option>
+                                <option value="Matematika">Matematika</option>
+                                <option value="Pendidikan Agama Islam">Pendidikan Agama Islam</option>
+                                <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
+                                <option value="Peternakan">Peternakan</option>
+                                <option value="Teknik Pertanian dan Biosistem">Teknik Pertanian dan Biosistem</option>
+                                <option value="Teknologi Pangan">Teknologi Pangan</option>
+                            </select>
                             @error('program') 
                                 <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> 
                             @enderror

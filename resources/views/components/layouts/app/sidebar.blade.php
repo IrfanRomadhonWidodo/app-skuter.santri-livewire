@@ -56,8 +56,14 @@
                         text-white rounded-lg">
                     {{ __('Pembayaran Tagihan') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="layout-grid" href="#"
-                    class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 text-white rounded-lg">
+                <flux:navlist.item 
+                    icon="layout-grid" 
+                    :href="route('admin.transaksi.tagihan-spp')" 
+                    :current="request()->routeIs('admin.transaksi.tagihan-spp')" 
+                    wire:navigate
+                    class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
+                        data-[current]:bg-gradient-to-r data-[current]:from-green-900 
+                        data-[current]:to-green-700 text-white rounded-lg">
                     {{ __('Tagihan SPP') }}
                 </flux:navlist.item>
                 <flux:navlist.item icon="chevrons-up-down" href="#"

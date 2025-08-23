@@ -12,11 +12,6 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'nim',
@@ -26,21 +21,11 @@ class User extends Authenticatable
         'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -49,9 +34,7 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the user's initials
-     */
+    // --- Custom Method ---
     public function initials(): string
     {
         return Str::of($this->name)
@@ -61,19 +44,41 @@ class User extends Authenticatable
             ->implode('');
     }
 
-    /**
-     * Cek apakah user adalah admin
-     */
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
-    /**
-     * Cek apakah user adalah mahasiswa
-     */
     public function isMahasiswa(): bool
     {
         return $this->role === 'mahasiswa';
     }
+
+    // --- Relasi ---
+
+    // 1-N: User → Tagihans
+    public function tagihans()
+    {
+        return $this->hasMany(Tagihan::class, 'user_id');
+    }
+
+    // 1-N: User → Pembayarans (mahasiswa yang bayar)
+    public function pembayarans()
+    {
+        return $this->hasMany(Pembayaran::class, 'user_id');
+    }
+
+    // 1-N: User → Pembayaran diterima (penerima/admin)
+    public function pembayaranDiterima()
+    {
+        return $this->hasMany(Pembayaran::class, 'penerima_id');
+    }
+
+    // 1-1 atau 1-N: User → Beasiswas (sesuai kebutuhan)
+    // public function beasiswas()
+    // {
+    //     return $this->hasMany(Beasiswa::class, 'user_id');
+    //     // kalau 1-1 ganti dengan:
+    //     // return $this->hasOne(Beasiswa::class, 'user_id');
+    // }
 }
