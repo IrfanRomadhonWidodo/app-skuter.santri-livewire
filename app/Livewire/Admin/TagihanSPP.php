@@ -34,7 +34,7 @@ class TagihanSPP extends Component
                                ->get();
 
             foreach ($mahasiswas as $mahasiswa) {
-    if (!$mahasiswa->mahasiswaStatus || $mahasiswa->mahasiswaStatus->status !== 'aktif') {
+    if (!$mahasiswa->mahasiswaStatus || !in_array($mahasiswa->mahasiswaStatus->status, ['aktif', 'cuti'])) {
         continue;
     }
 

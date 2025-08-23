@@ -13,6 +13,8 @@ class KelolaSPP extends Component
     public $kode, $program, $nominal_default, $periode_mulai, $periode_selesai;
     public $selectedId = null;
     public $isEdit = false;
+    public $showModal = false;
+    public $search = '';
 
     protected $rules = [
         'kode'            => 'required|string|max:50',
@@ -21,6 +23,29 @@ class KelolaSPP extends Component
         'periode_mulai'   => 'nullable|date',
         'periode_selesai' => 'nullable|date|after_or_equal:periode_mulai',
     ];
+
+    protected $listeners = [
+        'deleteData' => 'delete',
+        'closeModal' => 'closeModal'
+    ];
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function showCreateModal()
+    {
+        $this->resetForm();
+        $this->showModal = true;
+        $this->isEdit = false;
+    }
+
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->resetForm();
+    }
 
     public function resetForm()
     {
@@ -33,43 +58,15 @@ class KelolaSPP extends Component
             'selectedId',
             'isEdit'
         ]);
+        $this->resetValidation();
     }
 
     public function store()
     {
         $this->validate();
 
-        Periode::create([
-            'kode'            => $this->kode,
-            'program'         => $this->program,
-            'nominal_default' => $this->nominal_default,
-            'periode_mulai'   => $this->periode_mulai,
-            'periode_selesai' => $this->periode_selesai,
-        ]);
-
-        session()->flash('success', 'Periode SPP berhasil ditambahkan.');
-        $this->resetForm();
-    }
-
-    public function edit($id)
-    {
-        $record = Periode::findOrFail($id);
-        $this->selectedId     = $id;
-        $this->kode           = $record->kode;
-        $this->program        = $record->program;
-        $this->nominal_default = $record->nominal_default;
-        $this->periode_mulai  = $record->periode_mulai;
-        $this->periode_selesai = $record->periode_selesai;
-        $this->isEdit = true;
-    }
-
-    public function update()
-    {
-        $this->validate();
-
-        if ($this->selectedId) {
-            $record = Periode::findOrFail($this->selectedId);
-            $record->update([
+        try {
+            Periode::create([
                 'kode'            => $this->kode,
                 'program'         => $this->program,
                 'nominal_default' => $this->nominal_default,
@@ -77,21 +74,81 @@ class KelolaSPP extends Component
                 'periode_selesai' => $this->periode_selesai,
             ]);
 
-            session()->flash('success', 'Periode SPP berhasil diperbarui.');
-            $this->resetForm();
+            $this->dispatch('showSuccessMessage', ['message' => 'Periode SPP berhasil ditambahkan.']);
+            $this->closeModal();
+        } catch (\Exception $e) {
+            $this->dispatch('showErrorMessage', ['message' => 'Gagal menambahkan periode SPP.']);
         }
     }
 
-    public function destroy($id)
+    public function edit($id)
     {
-        Periode::findOrFail($id)->delete();
-        session()->flash('success', 'Periode SPP berhasil dihapus.');
+        try {
+            $record = Periode::findOrFail($id);
+            $this->selectedId     = $id;
+            $this->kode           = $record->kode;
+            $this->program        = $record->program;
+            $this->nominal_default = $record->nominal_default;
+            $this->periode_mulai  = $record->periode_mulai ? $record->periode_mulai->format('Y-m-d') : null;
+            $this->periode_selesai = $record->periode_selesai ? $record->periode_selesai->format('Y-m-d') : null;
+            $this->isEdit = true;
+            $this->showModal = true;
+        } catch (\Exception $e) {
+            $this->dispatch('showErrorMessage', ['message' => 'Data tidak ditemukan.']);
+        }
+    }
+
+    public function update()
+    {
+        $this->validate();
+
+        try {
+            if ($this->selectedId) {
+                $record = Periode::findOrFail($this->selectedId);
+                $record->update([
+                    'kode'            => $this->kode,
+                    'program'         => $this->program,
+                    'nominal_default' => $this->nominal_default,
+                    'periode_mulai'   => $this->periode_mulai,
+                    'periode_selesai' => $this->periode_selesai,
+                ]);
+
+                $this->dispatch('showSuccessMessage', ['message' => 'Periode SPP berhasil diperbarui.']);
+                $this->closeModal();
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('showErrorMessage', ['message' => 'Gagal memperbarui periode SPP.']);
+        }
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->dispatch('confirmDelete', ['id' => $id]);
+    }
+
+    public function delete($id)
+    {
+        try {
+            Periode::findOrFail($id)->delete();
+            $this->dispatch('showSuccessMessage', ['message' => 'Periode SPP berhasil dihapus.']);
+        } catch (\Exception $e) {
+            $this->dispatch('showErrorMessage', ['message' => 'Gagal menghapus periode SPP.']);
+        }
     }
 
     public function render()
     {
+        $query = Periode::query();
+
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('kode', 'like', '%' . $this->search . '%')
+                  ->orWhere('program', 'like', '%' . $this->search . '%');
+            });
+        }
+
         return view('livewire.admin.administrasi.kelola-spp', [
-            'periodes' => Periode::orderBy('created_at', 'desc')->paginate(10),
+            'periodes' => $query->orderBy('created_at', 'desc')->paginate(10),
         ]);
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('mahasiswa_statuses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('status', ['aktif', 'cuti', 'lulus'])->default('aktif');
+            $table->enum('status', ['aktif', 'cuti','keluar', 'lulus'])->default('aktif');
             $table->text('keterangan')->nullable(); // misalnya "Cuti karena sakit", "Lulus 2026"
             $table->timestamps();
         });

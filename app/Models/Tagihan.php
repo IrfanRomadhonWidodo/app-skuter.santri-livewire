@@ -51,7 +51,8 @@ class Tagihan extends Model
     public function scopeAktif($query)
     {
         return $query->whereHas('user', function ($q) {
-            $q->where('role', 'mahasiswaStatus')->where('status', 'aktif');
+            $q->where('role', 'mahasiswaStatus')
+              ->whereIn('status', ['aktif', 'cuti']); // Termasuk cuti
         });
     }
 
@@ -60,14 +61,14 @@ class Tagihan extends Model
     {
         $mahasiswas = User::where('role', 'mahasiswa')
                           ->where('program', $periode->program)
-                          ->whereHas('mahasiswa', fn($q) => $q->where('status', 'aktif'))
+                          ->whereHas('mahasiswaStatus', fn($q) => $q->whereIn('status', ['aktif', 'cuti']))
                           ->get();
 
         foreach ($mahasiswas as $mhs) {
             self::updateOrCreate(
                 ['user_id' => $mhs->id, 'periode_id' => $periode->id],
                 [
-                    'nim' => $mhs->mahasiswa->nim,
+                    'nim' => $mhs->mahasiswaStatus->nim ?? $mhs->nim,
                     'nama_mahasiswa' => $mhs->name,
                     'program' => $mhs->program,
                     'total_tagihan' => $periode->nominal,

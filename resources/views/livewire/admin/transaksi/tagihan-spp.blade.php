@@ -14,35 +14,36 @@
     {{-- Table Tagihan --}}
     <table class="w-full border-collapse border border-gray-300">
         <thead>
-            <tr class="bg-gray-100">
-                <th class="border p-2">Tanggal</th>
-                <th class="border p-2">Name</th>
-                <th class="border p-2">Nama Mahasiswa</th>
-                <th class="border p-2">Program Studi</th>
-                <th class="border p-2">Periode</th>
-                <th class="border p-2">Jenis Tagihan</th>
-                <th class="border p-2">Nominal</th>
-                <th class="border p-2">Note</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($tagihans as $tagihan)
-                <tr>
-                    <td class="border p-2">{{ $tagihan->created_at->format('d/m/Y') }}</td>
-                    <td class="border p-2">{{ $tagihan->user->name }}</td>
-                    <td class="border p-2">{{ $tagihan->nama_mahasiswa }}</td>
-                    <td class="border p-2">{{ $tagihan->program }}</td>
-                    <td class="border p-2">{{ $tagihan->periode->kode ?? '-' }}</td>
-                    <td class="border p-2">SPP</td>
-                    <td class="border p-2">Rp {{ number_format($tagihan->total_tagihan,0,',','.') }}</td>
-                    <td class="border p-2">{{ ucfirst($tagihan->status) }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="8" class="text-center p-4">Belum ada tagihan</td>
-                </tr>
-            @endforelse
-        </tbody>
+    <tr class="bg-gray-100">
+        <th class="border p-2">Tanggal</th>
+        <th class="border p-2">NIM</th> <!-- Kolom NIM baru -->
+        <th class="border p-2">Nama Mahasiswa</th>
+        <th class="border p-2">Program Studi</th>
+        <th class="border p-2">Periode</th>
+        <th class="border p-2">Jenis Tagihan</th>
+        <th class="border p-2">Nominal</th>
+        <th class="border p-2">Note</th>
+    </tr>
+</thead>
+<tbody>
+    @forelse ($tagihans as $tagihan)
+        <tr>
+            <td class="border p-2">{{ $tagihan->created_at->format('d/m/Y') }}</td>
+            <td class="border p-2">{{ $tagihan->nim }}</td> <!-- NIM ditampilkan -->
+            <td class="border p-2">{{ $tagihan->nama_mahasiswa }}</td>
+            <td class="border p-2">{{ $tagihan->program }}</td>
+            <td class="border p-2">{{ $tagihan->periode->kode ?? '-' }}</td>
+            <td class="border p-2">SPP</td>
+            <td class="border p-2">Rp {{ number_format($tagihan->total_tagihan,0,',','.') }}</td>
+            <td class="border p-2">{{ ucfirst($tagihan->status) }}</td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="9" class="text-center p-4">Belum ada tagihan</td>
+        </tr>
+    @endforelse
+</tbody>
+
     </table>
 
     {{-- Pagination --}}
