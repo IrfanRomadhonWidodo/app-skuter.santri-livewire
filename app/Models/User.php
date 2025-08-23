@@ -82,7 +82,7 @@ class User extends Authenticatable
 
     public function mahasiswaStatus()
     {
-        return $this->hasOne(MahasiswaStatus::class);
+        return $this->hasOne(MahasiswaStatus::class, 'mahasiswa_id');
     }
 
     // 1-1 atau 1-N: User → Beasiswas (sesuai kebutuhan)

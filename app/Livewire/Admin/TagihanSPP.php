@@ -24,12 +24,12 @@ class TagihanSPP extends Component
      */
     public function generateTagihanOtomatis()
     {
-        $periodes = Periode::all();
+        $periodes = Periode::with('programStudi')->get();
 
         foreach ($periodes as $periode) {
             // Ambil mahasiswa aktif di program yang sama
             $mahasiswas = User::where('role', 'mahasiswa')
-                ->where('program', $periode->program)
+                ->where('program_studi_id', $periode->programStudi->id)
                 ->with('mahasiswaStatus')
                 ->get();
 
@@ -38,13 +38,13 @@ class TagihanSPP extends Component
                     continue;
                 }
 
-                $exists = Tagihan::where('user_id', $mahasiswa->id)
+                $exists = Tagihan::where('mahasiswa_id', $mahasiswa->id)
                     ->where('periode_id', $periode->id)
                     ->exists();
 
                 if (!$exists) {
                     Tagihan::create([
-                        'user_id' => $mahasiswa->id,
+                        'mahasiswa_id' => $mahasiswa->id,
                         'periode_id' => $periode->id,
                         'nim' => $mahasiswa->nim, // ambil dari users
                         'nama_mahasiswa' => $mahasiswa->name,
@@ -60,7 +60,7 @@ class TagihanSPP extends Component
 
     public function render()
     {
-        $tagihans = Tagihan::with(['user', 'periode'])
+        $tagihans = Tagihan::with(['mahasiswa', 'periode'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
