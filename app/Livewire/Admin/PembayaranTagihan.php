@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Tagihan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PembayaranTagihan extends Component
 {
@@ -38,22 +39,28 @@ class PembayaranTagihan extends Component
      */
     public function updatedNim($value)
     {
-        $user = User::where('nim', $value)->first();
+        $user = User::with(['programStudi', 'tagihans'])->where('nim', $value)->first();
 
         if ($user) {
             $this->user_id = $user->id;
             $this->nama_mahasiswa = $user->name;
-            $this->program = $user->program;
+            $this->program = $user->programStudi ? $user->programStudi->nama : '-';
 
-            // ambil semua tagihan mahasiswa ini yang belum lunas
+            // Ambil semua tagihan mahasiswa ini yang belum lunas dan program studinya sesuai
             $this->tagihans = Tagihan::with(['periode.programStudi'])
                 ->where('user_id', $user->id)
-                ->where(function($q) {
+                ->whereHas('periode', function ($q) use ($user) {
+                    $q->where('program_studi_id', $user->program_studi_id);
+                })
+                ->where(function ($q) {
                     $q->whereNull('status')
-                      ->orWhere('status', '!=', 'lunas');
+                        ->orWhere('status', '!=', 'lunas');
                 })
                 ->get();
 
+                Log::info('Tagihan retrieved for user: ' . $user->id, [
+                    'tagihans' => $this->tagihans
+                ]);
         } else {
             $this->reset(['user_id', 'nama_mahasiswa', 'program']);
             $this->tagihans = collect();
@@ -92,8 +99,8 @@ class PembayaranTagihan extends Component
                 'tanggal_bayar' => $this->tanggal_bayar,
                 'jumlah'        => $this->nominal_bayar,
                 'cara_bayar'    => $this->cara_bayar,
-                'bukti_pembayaran' => $this->bukti_pembayaran 
-                    ? $this->bukti_pembayaran->store('bukti_pembayaran', 'public') 
+                'bukti_pembayaran' => $this->bukti_pembayaran
+                    ? $this->bukti_pembayaran->store('bukti_pembayaran', 'public')
                     : null,
                 'status' => 'menunggu',
             ]);
@@ -110,7 +117,6 @@ class PembayaranTagihan extends Component
 
             $this->resetForm();
             session()->flash('success', 'Pembayaran berhasil ditambahkan dan menunggu persetujuan.');
-
         } catch (\Throwable $e) {
             DB::rollBack();
             session()->flash('error', 'Gagal menyimpan pembayaran: ' . $e->getMessage());
@@ -123,7 +129,7 @@ class PembayaranTagihan extends Component
     public function approvePembayaran($id)
     {
         DB::beginTransaction();
-        
+
         try {
             $pembayaran = Pembayaran::findOrFail($id);
             $pembayaran->approve(Auth::id());
@@ -142,7 +148,7 @@ class PembayaranTagihan extends Component
     public function rejectPembayaran($id)
     {
         DB::beginTransaction();
-        
+
         try {
             $pembayaran = Pembayaran::findOrFail($id);
             $pembayaran->reject(Auth::id(), $this->catatan_penolakan);
@@ -179,11 +185,11 @@ class PembayaranTagihan extends Component
      */
     public function render()
     {
-        $query = Pembayaran::with(['user','penerima','tagihans.periode.programStudi']);
+        $query = Pembayaran::with(['user', 'penerima', 'tagihans.periode.programStudi']);
 
         if ($this->search) {
-            $query->whereHas('user', fn($q) => $q->where('name','like','%'.$this->search.'%')
-                                                   ->orWhere('nim','like','%'.$this->search.'%'));
+            $query->whereHas('user', fn($q) => $q->where('name', 'like', '%' . $this->search . '%')
+                ->orWhere('nim', 'like', '%' . $this->search . '%'));
         }
 
         if ($this->filterStatus) {
@@ -194,7 +200,7 @@ class PembayaranTagihan extends Component
             $query->whereDate('tanggal_bayar', $this->filterTanggal);
         }
 
-        $pembayarans = $query->orderBy('tanggal_bayar','desc')->paginate(10);
+        $pembayarans = $query->orderBy('tanggal_bayar', 'desc')->paginate(10);
 
         return view('livewire.admin.transaksi.pembayaran-tagihan', [
             'pembayarans' => $pembayarans,

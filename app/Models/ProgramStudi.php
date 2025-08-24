@@ -20,4 +20,9 @@ class ProgramStudi extends Model
     {
         return $this->hasMany(Periode::class);
     }
+
+    public function tagihans()
+    {
+        return $this->hasMany(Tagihan::class);
+    }
 }

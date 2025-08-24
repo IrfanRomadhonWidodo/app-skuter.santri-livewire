@@ -29,14 +29,14 @@ class TagihanSPP extends Component
         foreach ($periodes as $periode) {
             // Hapus tagihan yang programnya sudah tidak sesuai lagi
             Tagihan::where('periode_id', $periode->id)
-                   ->where('program', '!=', $periode->programStudi->nama)
-                   ->delete();
+                ->where('program_studi_id', '!=', $periode->programStudi->id)
+                ->delete();
 
             // Ambil semua mahasiswa di program periode ini
             $mahasiswas = User::where('role', 'mahasiswa')
-                               ->where('program', $periode->programStudi->nama)
-                               ->with('mahasiswaStatus')
-                               ->get();
+                ->where('program_studi_id', $periode->programStudi->id)
+                ->with('mahasiswaStatus')
+                ->get();
 
             foreach ($mahasiswas as $mahasiswa) {
                 if (!$mahasiswa->mahasiswaStatus || !in_array($mahasiswa->mahasiswaStatus->status, ['aktif', 'cuti'])) {
@@ -44,15 +44,12 @@ class TagihanSPP extends Component
                 }
 
                 $tagihan = Tagihan::where('user_id', $mahasiswa->id)
-                                  ->where('periode_id', $periode->id)
-                                  ->first();
+                    ->where('periode_id', $periode->id)
+                    ->first();
 
                 if ($tagihan) {
                     // Update semua field yang bisa berubah
                     $tagihan->update([
-                        'nim' => $mahasiswa->nim,
-                        'nama_mahasiswa' => $mahasiswa->name,
-                        'program' => $mahasiswa->program,
                         'total_tagihan' => $periode->nominal_awal,
                     ]);
                 } else {
@@ -60,9 +57,6 @@ class TagihanSPP extends Component
                     Tagihan::create([
                         'user_id' => $mahasiswa->id,
                         'periode_id' => $periode->id,
-                        'nim' => $mahasiswa->nim,
-                        'nama_mahasiswa' => $mahasiswa->name,
-                        'program' => $mahasiswa->program,
                         'total_tagihan' => $periode->nominal_awal,
                         'terbayar' => 0,
                         'status' => null,

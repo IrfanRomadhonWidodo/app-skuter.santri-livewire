@@ -32,9 +32,9 @@
                 @forelse ($tagihans as $tagihan)
                     <tr>
                         <td class="border p-2">{{ $tagihan->created_at->format('d/m/Y') }}</td>
-                        <td class="border p-2">{{ $tagihan->nim }}</td>
-                        <td class="border p-2">{{ $tagihan->nama_mahasiswa }}</td>
-                        <td class="border p-2">{{ $tagihan->program }}</td>
+                        <td class="border p-2">{{ $tagihan->mahasiswa->nim }}</td>
+                        <td class="border p-2">{{ $tagihan->mahasiswa->name }}</td>
+                        <td class="border p-2">{{ $tagihan->periode->programStudi->nama }}</td>
                         <td class="border p-2">{{ $tagihan->periode->kode ?? '-' }}</td>
                         <td class="border p-2">Rp {{ number_format($tagihan->total_tagihan, 0, ',', '.') }}</td>
                         <td class="border p-2">Rp {{ number_format($tagihan->terbayar, 0, ',', '.') }}</td>

@@ -45,7 +45,8 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
-                <input type="text" wire:model="program" readonly class="w-full border px-3 py-2 rounded bg-gray-100">
+                <input type="text" wire:model="program" readonly class="w-full border px-3 py-2 rounded bg-gray-100"
+                    value="{{ $program }}">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Tagihan</label>

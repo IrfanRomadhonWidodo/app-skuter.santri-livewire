@@ -15,16 +15,20 @@ return new class extends Migration
             $table->id();
 
             // Relasi ke user (mahasiswa)
-            $table->foreignId('mahasiswa_id')
-                ->unique()
+            $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
             // Relasi ke periode (program + nominal SPP)
             $table->foreignId('periode_id')
-                ->unique()
                 ->constrained('periodes')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
+            // Relasi ke program studi
+            $table->foreignId('program_studi_id')
+                ->constrained('program_studis')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 

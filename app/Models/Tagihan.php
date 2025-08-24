@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 
 class Tagihan extends Model
 {
@@ -13,9 +14,7 @@ class Tagihan extends Model
     protected $fillable = [
         'user_id',
         'periode_id',
-        'nim',
-        'nama_mahasiswa',
-        'program',
+        'program_studi_id',
         'total_tagihan',
         'terbayar',
         'status',
@@ -25,6 +24,11 @@ class Tagihan extends Model
     public function mahasiswa()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function programStudi()
+    {
+        return $this->belongsTo(ProgramStudi::class, 'program_studi_id');
     }
 
     // Relasi ke Periode
@@ -42,8 +46,8 @@ class Tagihan extends Model
     public function pembayarans()
     {
         return $this->belongsToMany(Pembayaran::class, 'pembayaran_tagihan', 'tagihan_id', 'pembayaran_id')
-                    ->withPivot('nominal_teralokasi')
-                    ->withTimestamps();
+            ->withPivot('nominal_teralokasi')
+            ->withTimestamps();
     }
 
     // Helper sisa tagihan
@@ -56,9 +60,16 @@ class Tagihan extends Model
     public static function generateForPeriode($periode)
     {
         $mahasiswas = User::where('role', 'mahasiswa')
-                          ->where('program_studi_id', $periode->programStudi->id)
-                          ->whereHas('mahasiswaStatus', fn($q) => $q->whereIn('status', ['aktif', 'cuti']))
-                          ->get();
+            ->where('program_studi_id', $periode->programStudi->id)
+            ->whereHas('mahasiswaStatus', fn($q) => $q->whereIn('status', ['aktif', 'cuti']))
+            ->get();
+
+
+        Log::info('Generate tagihan SPP', [
+            'periode_id' => $periode->id,
+            'program_studi_id' => $periode->program_studi_id,
+            'mahasiswa_count' => $mahasiswas->count(),
+        ]);
 
         foreach ($mahasiswas as $mhs) {
             self::updateOrCreate(
