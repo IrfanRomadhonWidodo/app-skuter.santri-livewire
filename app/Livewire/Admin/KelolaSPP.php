@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Periode;
 use App\Models\ProgramStudi;
+use App\Models\Tagihan;
 use Illuminate\Support\Facades\Log;
 
 class KelolaSPP extends Component
@@ -21,7 +22,7 @@ class KelolaSPP extends Component
     protected $rules = [
         'kode'              => 'required|string|max:50',
         'program_studi_id'  => 'required|exists:program_studis,id',
-        'nominal_awal'   => 'required|numeric|min:0',
+        'nominal_awal'      => 'required|numeric|min:0',
         'periode_mulai'     => 'nullable|date',
         'periode_selesai'   => 'nullable|date|after_or_equal:periode_mulai',
     ];
@@ -68,15 +69,18 @@ class KelolaSPP extends Component
         $this->validate();
 
         try {
-            Periode::create([
+            $periode = Periode::create([
                 'kode'              => $this->kode,
                 'program_studi_id'  => $this->program_studi_id,
-                'nominal_awal'   => $this->nominal_awal,
+                'nominal_awal'      => $this->nominal_awal,
                 'periode_mulai'     => $this->periode_mulai,
                 'periode_selesai'   => $this->periode_selesai,
             ]);
 
-            $this->dispatch('showSuccessMessage', ['message' => 'Periode SPP berhasil ditambahkan.']);
+            // Auto generate tagihan untuk periode baru
+            Tagihan::generateForPeriode($periode);
+
+            $this->dispatch('showSuccessMessage', ['message' => 'Periode SPP berhasil ditambahkan dan tagihan telah digenerate.']);
             $this->closeModal();
         } catch (\Exception $e) {
             Log::error('Error adding SPP period: ' . $e->getMessage());
@@ -90,8 +94,8 @@ class KelolaSPP extends Component
             $record = Periode::findOrFail($id);
             $this->selectedId     = $id;
             $this->kode           = $record->kode;
-            $this->program_studi_id        = $record->program_studi_id;
-            $this->nominal_awal = $record->nominal_awal;
+            $this->program_studi_id = $record->program_studi_id;
+            $this->nominal_awal   = $record->nominal_awal;
             $this->periode_mulai  = $record->periode_mulai ? $record->periode_mulai->format('Y-m-d') : null;
             $this->periode_selesai = $record->periode_selesai ? $record->periode_selesai->format('Y-m-d') : null;
             $this->isEdit = true;
@@ -111,9 +115,14 @@ class KelolaSPP extends Component
                 $record->update([
                     'kode'              => $this->kode,
                     'program_studi_id'  => $this->program_studi_id,
-                    'nominal_awal'   => $this->nominal_awal,
+                    'nominal_awal'      => $this->nominal_awal,
                     'periode_mulai'     => $this->periode_mulai,
                     'periode_selesai'   => $this->periode_selesai,
+                ]);
+
+                // Update tagihan yang sudah ada
+                $record->tagihans()->update([
+                    'total_tagihan' => $this->nominal_awal
                 ]);
 
                 $this->dispatch('showSuccessMessage', ['message' => 'Periode SPP berhasil diperbarui.']);
@@ -146,7 +155,9 @@ class KelolaSPP extends Component
         if ($this->search) {
             $query->where(function ($q) {
                 $q->where('kode', 'like', '%' . $this->search . '%')
-                    ->orWhere('program_studi_id', 'like', '%' . $this->search . '%');
+                    ->orWhereHas('programStudi', function($sq) {
+                        $sq->where('nama', 'like', '%' . $this->search . '%');
+                    });
             });
         }
 

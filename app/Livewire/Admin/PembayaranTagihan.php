@@ -11,7 +11,6 @@ use App\Models\Tagihan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-
 class PembayaranTagihan extends Component
 {
     use WithPagination, WithFileUploads;
@@ -30,90 +29,132 @@ class PembayaranTagihan extends Component
     // Tagihan yang bisa dipilih
     public $tagihans = [];
 
+    // Approval fields
+    public $approve_id = null;
+    public $catatan_penolakan = '';
+
     /**
      * Ketika NIM diubah, ambil data mahasiswa & tagihan
      */
     public function updatedNim($value)
-{
-    $user = User::where('nim', $value)->first();
+    {
+        $user = User::where('nim', $value)->first();
 
-    if ($user) {
-        $this->user_id = $user->id;
-        $this->nama_mahasiswa = $user->name;
-        $this->program = $user->program;
+        if ($user) {
+            $this->user_id = $user->id;
+            $this->nama_mahasiswa = $user->name;
+            $this->program = $user->program;
 
-        // ambil semua tagihan mahasiswa ini yang belum lunas
-        $this->tagihans = Tagihan::with(['periode' => function($q) {
-        $q->select('id','kode','nominal_default');
-    }])
-    ->where('user_id', $user->id)
-    ->where(function($q) {
-        $q->whereNull('status')
-          ->orWhere('status', '!=', 'lunas');
-    })
-    ->get();
+            // ambil semua tagihan mahasiswa ini yang belum lunas
+            $this->tagihans = Tagihan::with(['periode.programStudi'])
+                ->where('user_id', $user->id)
+                ->where(function($q) {
+                    $q->whereNull('status')
+                      ->orWhere('status', '!=', 'lunas');
+                })
+                ->get();
 
-    } else {
-        $this->reset(['user_id', 'nama_mahasiswa', 'program']);
-        $this->tagihans = collect();
+        } else {
+            $this->reset(['user_id', 'nama_mahasiswa', 'program']);
+            $this->tagihans = collect();
+        }
     }
-}
-
-
-
 
     /**
      * Ketika jenis tagihan dipilih, tampilkan sisa tagihan
      */
     public function updatedTagihanId($value)
-{
-    $tagihan = Tagihan::find($value);
-    $this->sisa_tagihan = $tagihan?->sisa ?? 0;
-}
+    {
+        $tagihan = Tagihan::find($value);
+        $this->sisa_tagihan = $tagihan?->sisa ?? 0;
+    }
 
     /**
      * Simpan pembayaran baru
      */
     public function savePembayaran()
-{
-    DB::beginTransaction();
-
-    try {
-        $pembayaran = Pembayaran::create([
-            'user_id'       => $this->user_id,
-            'penerima_id'   => Auth::id(),
-            'tanggal_bayar' => $this->tanggal_bayar,
-            'jumlah'        => $this->nominal_bayar,
-            'cara_bayar'    => $this->cara_bayar,
-            'bukti_pembayaran' => $this->bukti_pembayaran 
-                ? $this->bukti_pembayaran->store('bukti_pembayaran', 'public') 
-                : null,
-            'status' => 'menunggu',
+    {
+        $this->validate([
+            'tanggal_bayar' => 'required|date',
+            'user_id' => 'required|exists:users,id',
+            'tagihan_id' => 'required|exists:tagihans,id',
+            'nominal_bayar' => 'required|numeric|min:1',
+            'cara_bayar' => 'required|in:tunai,transfer,kartu',
+            'bukti_pembayaran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        // Alokasi tagihan
-        $tagihan = Tagihan::find($this->tagihan_id);
-        $alokasi = min($this->nominal_bayar, $tagihan->total_tagihan - $tagihan->terbayar);
+        DB::beginTransaction();
 
-        $pembayaran->tagihans()->attach($tagihan->id, [
-            'nominal_teralokasi' => $alokasi
-        ]);
+        try {
+            $pembayaran = Pembayaran::create([
+                'user_id'       => $this->user_id,
+                'penerima_id'   => Auth::id(),
+                'tanggal_bayar' => $this->tanggal_bayar,
+                'jumlah'        => $this->nominal_bayar,
+                'cara_bayar'    => $this->cara_bayar,
+                'bukti_pembayaran' => $this->bukti_pembayaran 
+                    ? $this->bukti_pembayaran->store('bukti_pembayaran', 'public') 
+                    : null,
+                'status' => 'menunggu',
+            ]);
 
-        $tagihan->terbayar += $alokasi;
-        $tagihan->status = $tagihan->terbayar >= $tagihan->total_tagihan ? 'lunas' : 'parsial';
-        $tagihan->save();
+            // Alokasi tagihan
+            $tagihan = Tagihan::find($this->tagihan_id);
+            $alokasi = min($this->nominal_bayar, $tagihan->total_tagihan - $tagihan->terbayar);
 
-        DB::commit();
+            $pembayaran->tagihans()->attach($tagihan->id, [
+                'nominal_teralokasi' => $alokasi
+            ]);
 
-        $this->resetForm();
-        session()->flash('success', 'Pembayaran berhasil ditambahkan.');
+            DB::commit();
 
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        session()->flash('error', 'Gagal menyimpan pembayaran: ' . $e->getMessage());
+            $this->resetForm();
+            session()->flash('success', 'Pembayaran berhasil ditambahkan dan menunggu persetujuan.');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            session()->flash('error', 'Gagal menyimpan pembayaran: ' . $e->getMessage());
+        }
     }
-}
 
+    /**
+     * Approve pembayaran
+     */
+    public function approvePembayaran($id)
+    {
+        DB::beginTransaction();
+        
+        try {
+            $pembayaran = Pembayaran::findOrFail($id);
+            $pembayaran->approve(Auth::id());
+
+            DB::commit();
+            session()->flash('success', 'Pembayaran berhasil disetujui.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            session()->flash('error', 'Gagal menyetujui pembayaran: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reject pembayaran
+     */
+    public function rejectPembayaran($id)
+    {
+        DB::beginTransaction();
+        
+        try {
+            $pembayaran = Pembayaran::findOrFail($id);
+            $pembayaran->reject(Auth::id(), $this->catatan_penolakan);
+
+            DB::commit();
+            $this->catatan_penolakan = '';
+            session()->flash('success', 'Pembayaran berhasil ditolak.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            session()->flash('error', 'Gagal menolak pembayaran: ' . $e->getMessage());
+        }
+    }
 
     /**
      * Reset form input
@@ -138,7 +179,7 @@ class PembayaranTagihan extends Component
      */
     public function render()
     {
-        $query = Pembayaran::with(['user','penerima','tagihans']);
+        $query = Pembayaran::with(['user','penerima','tagihans.periode.programStudi']);
 
         if ($this->search) {
             $query->whereHas('user', fn($q) => $q->where('name','like','%'.$this->search.'%')

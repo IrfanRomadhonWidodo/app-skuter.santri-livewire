@@ -22,60 +22,59 @@ class TagihanSPP extends Component
     /**
      * Generate tagihan otomatis untuk mahasiswa aktif sesuai periode terbaru
      */
-   public function generateTagihanOtomatis()
-{
-    $periodes = Periode::all();
+    public function generateTagihanOtomatis()
+    {
+        $periodes = Periode::with('programStudi')->get();
 
-    foreach ($periodes as $periode) {
-        // Hapus tagihan yang programnya sudah tidak sesuai lagi
-        Tagihan::where('periode_id', $periode->id)
-               ->where('program', '!=', $periode->program)
-               ->delete();
+        foreach ($periodes as $periode) {
+            // Hapus tagihan yang programnya sudah tidak sesuai lagi
+            Tagihan::where('periode_id', $periode->id)
+                   ->where('program', '!=', $periode->programStudi->nama)
+                   ->delete();
 
-        // Ambil semua mahasiswa di program periode ini
-        $mahasiswas = User::where('role', 'mahasiswa')
-                           ->where('program', $periode->program)
-                           ->with('mahasiswaStatus')
-                           ->get();
+            // Ambil semua mahasiswa di program periode ini
+            $mahasiswas = User::where('role', 'mahasiswa')
+                               ->where('program', $periode->programStudi->nama)
+                               ->with('mahasiswaStatus')
+                               ->get();
 
-        foreach ($mahasiswas as $mahasiswa) {
-            if (!$mahasiswa->mahasiswaStatus || !in_array($mahasiswa->mahasiswaStatus->status, ['aktif', 'cuti'])) {
-                continue;
-            }
+            foreach ($mahasiswas as $mahasiswa) {
+                if (!$mahasiswa->mahasiswaStatus || !in_array($mahasiswa->mahasiswaStatus->status, ['aktif', 'cuti'])) {
+                    continue;
+                }
 
-            $tagihan = Tagihan::where('user_id', $mahasiswa->id)
-                              ->where('periode_id', $periode->id)
-                              ->first();
+                $tagihan = Tagihan::where('user_id', $mahasiswa->id)
+                                  ->where('periode_id', $periode->id)
+                                  ->first();
 
-            if ($tagihan) {
-                // Update semua field yang bisa berubah
-                $tagihan->update([
-                    'nim' => $mahasiswa->nim,
-                    'nama_mahasiswa' => $mahasiswa->name,
-                    'program' => $mahasiswa->program,
-                    'total_tagihan' => $periode->nominal_default,
-                ]);
-            } else {
-                // Buat baru kalau belum ada
-                Tagihan::create([
-                    'user_id' => $mahasiswa->id,
-                    'periode_id' => $periode->id,
-                    'nim' => $mahasiswa->nim,
-                    'nama_mahasiswa' => $mahasiswa->name,
-                    'program' => $mahasiswa->program,
-                    'total_tagihan' => $periode->nominal_default,
-                    'terbayar' => 0,
-                    'status' => null,
-                ]);
+                if ($tagihan) {
+                    // Update semua field yang bisa berubah
+                    $tagihan->update([
+                        'nim' => $mahasiswa->nim,
+                        'nama_mahasiswa' => $mahasiswa->name,
+                        'program' => $mahasiswa->program,
+                        'total_tagihan' => $periode->nominal_awal,
+                    ]);
+                } else {
+                    // Buat baru kalau belum ada
+                    Tagihan::create([
+                        'user_id' => $mahasiswa->id,
+                        'periode_id' => $periode->id,
+                        'nim' => $mahasiswa->nim,
+                        'nama_mahasiswa' => $mahasiswa->name,
+                        'program' => $mahasiswa->program,
+                        'total_tagihan' => $periode->nominal_awal,
+                        'terbayar' => 0,
+                        'status' => null,
+                    ]);
+                }
             }
         }
     }
-}
-
 
     public function render()
     {
-        $tagihans = Tagihan::with(['mahasiswa', 'periode'])
+        $tagihans = Tagihan::with(['mahasiswa', 'periode.programStudi'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 

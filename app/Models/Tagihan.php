@@ -11,17 +11,20 @@ class Tagihan extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'mahasiswa_id',
+        'user_id',
         'periode_id',
+        'nim',
+        'nama_mahasiswa',
+        'program',
         'total_tagihan',
         'terbayar',
         'status',
     ];
 
-    // Relasi ke Mahasiswa
+    // Relasi ke User (mahasiswa)
     public function mahasiswa()
     {
-        return $this->belongsTo(User::class, 'mahasiswa_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // Relasi ke Periode
@@ -49,20 +52,11 @@ class Tagihan extends Model
         return $this->total_tagihan - $this->terbayar;
     }
 
-    // Scope mahasiswa aktif
-    public function scopeAktif($query)
-    {
-        return $query->whereHas('user', function ($q) {
-            $q->where('role', 'mahasiswaStatus')
-              ->whereIn('status', ['aktif', 'cuti']); // Termasuk cuti
-        });
-    }
-
     // Auto-generate tagihan untuk periode baru
     public static function generateForPeriode($periode)
     {
         $mahasiswas = User::where('role', 'mahasiswa')
-                          ->where('program', $periode->program)
+                          ->where('program_studi_id', $periode->programStudi->id)
                           ->whereHas('mahasiswaStatus', fn($q) => $q->whereIn('status', ['aktif', 'cuti']))
                           ->get();
 
@@ -70,10 +64,10 @@ class Tagihan extends Model
             self::updateOrCreate(
                 ['user_id' => $mhs->id, 'periode_id' => $periode->id],
                 [
-                    'nim' => $mhs->mahasiswaStatus->nim ?? $mhs->nim,
+                    'nim' => $mhs->nim,
                     'nama_mahasiswa' => $mhs->name,
-                    'program' => $mhs->program,
-                    'total_tagihan' => $periode->nominal,
+                    'program_studi_id' => $mhs->program_studi_id,
+                    'total_tagihan' => $periode->nominal_awal,
                     'terbayar' => 0,
                     'status' => null,
                 ]

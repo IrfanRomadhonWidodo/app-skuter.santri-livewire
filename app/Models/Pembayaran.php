@@ -13,7 +13,7 @@ class Pembayaran extends Model
     protected $table = 'pembayarans';
 
     protected $fillable = [
-        'mahasiswa_id',
+        'user_id',
         'penerima_id',
         'tanggal_bayar',
         'jumlah',
@@ -22,12 +22,24 @@ class Pembayaran extends Model
         'kwitansi',
         'status',
         'approved_at',
+        'catatan',
+    ];
+
+    protected $casts = [
+        'tanggal_bayar' => 'date',
+        'approved_at' => 'datetime',
     ];
 
     // Relasi ke User (mahasiswa yang bayar)
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Untuk backward compatibility
     public function mahasiswa()
     {
-        return $this->belongsTo(User::class, 'mahasiswa_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // Relasi ke User (penerima/admin)
@@ -42,5 +54,39 @@ class Pembayaran extends Model
         return $this->belongsToMany(Tagihan::class, 'pembayaran_tagihan', 'pembayaran_id', 'tagihan_id')
                     ->withPivot('nominal_teralokasi')
                     ->withTimestamps();
+    }
+
+    // Method untuk approve pembayaran
+    public function approve($adminId)
+    {
+        $this->update([
+            'status' => 'disetujui',
+            'approved_at' => now(),
+            'penerima_id' => $adminId,
+        ]);
+
+        // Update status tagihan
+        foreach ($this->tagihans as $tagihan) {
+            $nominalTeralokasi = $tagihan->pivot->nominal_teralokasi;
+            $tagihan->terbayar += $nominalTeralokasi;
+            
+            if ($tagihan->terbayar >= $tagihan->total_tagihan) {
+                $tagihan->status = 'lunas';
+            } else {
+                $tagihan->status = 'parsial';
+            }
+            $tagihan->save();
+        }
+    }
+
+    // Method untuk reject pembayaran
+    public function reject($adminId, $catatan = null)
+    {
+        $this->update([
+            'status' => 'ditolak',
+            'approved_at' => now(),
+            'penerima_id' => $adminId,
+            'catatan' => $catatan,
+        ]);
     }
 }

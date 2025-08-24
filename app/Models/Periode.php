@@ -31,9 +31,21 @@ class Periode extends Model
         return $this->belongsTo(ProgramStudi::class);
     }
 
-    // Relasi 1-N: JenisTagihan → Tagihans
+    // Relasi 1-N: Periode → Tagihans
     public function tagihans()
     {
         return $this->hasMany(Tagihan::class);
+    }
+
+    // Accessor untuk nominal_default (backward compatibility)
+    public function getNominalDefaultAttribute()
+    {
+        return $this->nominal_awal;
+    }
+
+    // Accessor untuk program (backward compatibility)
+    public function getProgramAttribute()
+    {
+        return $this->programStudi->nama ?? null;
     }
 }
