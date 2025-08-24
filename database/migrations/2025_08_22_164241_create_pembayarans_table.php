@@ -24,13 +24,14 @@ return new class extends Migration
                   ->cascadeOnUpdate()
                   ->restrictOnDelete();
 
-            $table->date('tanggal_bayar'); // dari form
-            $table->decimal('jumlah', 15, 2); // nominal bayar (parsial boleh)
-            $table->enum('cara_bayar', ['transfer', 'cash', 'alokasi']); // metode bayar
-            $table->string('bukti_pembayaran')->nullable(); // file bukti JPG/PNG
-            $table->string('kwitansi')->nullable(); // path kwitansi PDF/IMG setelah ACC
-            $table->enum('status', ['menunggu','disetujui','ditolak'])->default('menunggu');
-            $table->timestamp('approved_at')->nullable();
+            $table->date('tanggal_bayar')->nullable(); // dari form
+            $table->decimal('jumlah', 15, 2); // berapa yang disetor user (parsial boleh)
+            $table->enum('cara_bayar', ['transfer', 'cash', 'alokasi']); // transfer/cash/alokasi
+            $table->string('bukti_pembayaran')->nullable(); // path JPG/PNG
+            $table->string('kwitansi')->nullable(); // path PDF/IMG kwitansi setelah ACC
+
+            $table->enum('status', ['menunggu', 'disetujui', 'ditolak'])->default('menunggu');
+            $table->date('tanggal_persetujuan')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
