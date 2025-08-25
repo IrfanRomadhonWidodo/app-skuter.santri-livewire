@@ -61,7 +61,7 @@
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600">Belum Bayar</p>
                     <p class="text-lg font-semibold text-red-600">
-                        {{ $tagihans->where('status', 'belum_bayar')->count() }}
+                        {{ $tagihans->where('status', '')->count() }}
                     </p>
                 </div>
             </div>

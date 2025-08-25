@@ -17,7 +17,7 @@ class PembayaranTagihan extends Component
     use WithPagination, WithFileUploads;
 
     protected $paginationTheme = 'tailwind';
-
+    public $showModal = false;
     // Form fields
     public $tanggal_bayar, $nim, $user_id, $nama_mahasiswa, $program, $tagihan_id;
     public $sisa_tagihan, $nominal_bayar, $cara_bayar, $bukti_pembayaran;
@@ -116,7 +116,7 @@ class PembayaranTagihan extends Component
             ]);
 
             DB::commit();
-
+            $this->showModal = false;
             $this->resetForm();
             session()->flash('success', 'Pembayaran berhasil ditambahkan dan menunggu persetujuan.');
         } catch (\Throwable $e) {
@@ -178,7 +178,17 @@ class PembayaranTagihan extends Component
             ]);
         }
     }
+    public function showCreateModal()
+    {
+        $this->resetForm();
+        $this->showModal = true;
+    }
 
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->resetForm();
+    }
     /**
      * Reset form input
      */
