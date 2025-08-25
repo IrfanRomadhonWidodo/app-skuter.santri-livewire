@@ -31,7 +31,8 @@ return new class extends Migration
             $table->string('kwitansi')->nullable(); // path PDF/IMG kwitansi setelah ACC
 
             $table->enum('status', ['menunggu', 'disetujui', 'ditolak'])->default('menunggu');
-            $table->date('tanggal_persetujuan')->nullable();
+            $table->text('catatan')->nullable(); // catatan dari admin/petugas
+            $table->date('approved_at')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

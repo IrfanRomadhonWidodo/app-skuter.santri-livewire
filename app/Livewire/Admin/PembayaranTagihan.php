@@ -33,6 +33,8 @@ class PembayaranTagihan extends Component
     // Approval fields
     public $approve_id = null;
     public $catatan_penolakan = '';
+    public $showRejectModal = false;
+    public $rejectPembayaranId = null;
 
     /**
      * Ketika NIM diubah, ambil data mahasiswa & tagihan
@@ -58,9 +60,9 @@ class PembayaranTagihan extends Component
                 })
                 ->get();
 
-                Log::info('Tagihan retrieved for user: ' . $user->id, [
-                    'tagihans' => $this->tagihans
-                ]);
+            Log::info('Tagihan retrieved for user: ' . $user->id, [
+                'tagihans' => $this->tagihans
+            ]);
         } else {
             $this->reset(['user_id', 'nama_mahasiswa', 'program']);
             $this->tagihans = collect();
@@ -147,18 +149,33 @@ class PembayaranTagihan extends Component
      */
     public function rejectPembayaran($id)
     {
+        $this->rejectPembayaranId = $id;
+        $this->catatan_penolakan = '';
+        $this->showRejectModal = true;
+
+    }
+
+    public function confirmReject()
+    {
         DB::beginTransaction();
-
+        
         try {
-            $pembayaran = Pembayaran::findOrFail($id);
+            $pembayaran = Pembayaran::findOrFail($this->rejectPembayaranId);
             $pembayaran->reject(Auth::id(), $this->catatan_penolakan);
-
+            
             DB::commit();
+            $this->showRejectModal = false;
             $this->catatan_penolakan = '';
+            Log::info('Rejecting pembayaran ID: ' . $this->rejectPembayaranId, [
+                'catatan_penolakan' => $this->catatan_penolakan
+            ]);
             session()->flash('success', 'Pembayaran berhasil ditolak.');
         } catch (\Throwable $e) {
             DB::rollBack();
             session()->flash('error', 'Gagal menolak pembayaran: ' . $e->getMessage());
+            Log::error('Error rejecting pembayaran ID: ' . $this->rejectPembayaranId, [
+                'error' => $e->getMessage()
+            ]);
         }
     }
 

@@ -81,9 +81,9 @@
                 <select wire:model="cara_bayar"
                     class="w-full border px-3 py-2 rounded @error('cara_bayar') border-red-500 @enderror">
                     <option value="">-- Pilih Cara Bayar --</option>
-                    <option value="tunai">Tunai</option>
                     <option value="transfer">Transfer</option>
-                    <option value="kartu">Kartu</option>
+                    <option value="cash">Cash</option>
+                    <option value="alokasi">Alokasi</option>
                 </select>
                 @error('cara_bayar')
                     <span class="text-red-500 text-xs">{{ $message }}</span>
@@ -213,17 +213,17 @@
     </div>
 
     {{-- Modal untuk input catatan penolakan --}}
-    @if ($approve_id)
+    @if ($showRejectModal)
         <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="bg-white p-6 rounded-lg max-w-md w-full mx-4">
                 <h3 class="text-lg font-semibold mb-4">Catatan Penolakan</h3>
                 <textarea wire:model="catatan_penolakan" class="w-full border px-3 py-2 rounded h-24"
                     placeholder="Masukkan alasan penolakan..."></textarea>
                 <div class="flex justify-end gap-2 mt-4">
-                    <button wire:click="$set('approve_id', null)" class="px-4 py-2 bg-gray-300 rounded">Batal</button>
+                    <button wire:click="$set('showRejectModal', false)"
+                        class="px-4 py-2 bg-gray-300 rounded">Batal</button>
                     <button wire:click="confirmReject" class="px-4 py-2 bg-red-600 text-white rounded">Tolak</button>
                 </div>
             </div>
         </div>
     @endif
-</div>
