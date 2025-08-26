@@ -88,7 +88,7 @@ class PembayaranTagihan extends Component
             'user_id' => 'required|exists:users,id',
             'tagihan_id' => 'required|exists:tagihans,id',
             'nominal_bayar' => 'required|numeric|min:1',
-            'cara_bayar' => 'required|in:tunai,transfer,kartu',
+            'cara_bayar' => 'required|in:transfer,cash,alokasi',
             'bukti_pembayaran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 

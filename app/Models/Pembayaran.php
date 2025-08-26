@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\KwitansiService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -52,8 +53,8 @@ class Pembayaran extends Model
     public function tagihans()
     {
         return $this->belongsToMany(Tagihan::class, 'pembayaran_tagihan', 'pembayaran_id', 'tagihan_id')
-                    ->withPivot('nominal_teralokasi')
-                    ->withTimestamps();
+            ->withPivot('nominal_teralokasi')
+            ->withTimestamps();
     }
 
     // Method untuk approve pembayaran
@@ -65,11 +66,19 @@ class Pembayaran extends Model
             'penerima_id' => $adminId,
         ]);
 
+        // Generate kwitansi
+        $kwitansiService = new KwitansiService();
+        $kwitansiPath = $kwitansiService->generateKwitansi($this);
+
+        $this->update([
+            'kwitansi' => $kwitansiPath
+        ]);
+
         // Update status tagihan
         foreach ($this->tagihans as $tagihan) {
             $nominalTeralokasi = $tagihan->pivot->nominal_teralokasi;
             $tagihan->terbayar += $nominalTeralokasi;
-            
+
             if ($tagihan->terbayar >= $tagihan->total_tagihan) {
                 $tagihan->status = 'lunas';
             } else {

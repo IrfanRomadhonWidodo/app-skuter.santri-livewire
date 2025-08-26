@@ -8,7 +8,8 @@
             </div>
 
             <div class="flex-shrink-0">
-                <img src="{{ asset('image/keuangan.png') }}" alt="Kas" class="h-32 w-auto object-contain drop-shadow-md">
+                <img src="{{ asset('image/keuangan.png') }}" alt="Kas"
+                    class="h-32 w-auto object-contain drop-shadow-md">
             </div>
         </div>
 
@@ -27,14 +28,14 @@
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <select wire:model="filterStatus" 
+                    <select wire:model="filterStatus"
                         class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600">
                         <option value="">Semua Status</option>
                         <option value="menunggu">Menunggu</option>
                         <option value="disetujui">Disetujui</option>
                         <option value="ditolak">Ditolak</option>
                     </select>
-                    <input type="date" wire:model="filterTanggal" 
+                    <input type="date" wire:model="filterTanggal"
                         class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600">
                 </div>
                 <button wire:click="showCreateModal"
@@ -50,12 +51,14 @@
 
             <!-- Alert Messages -->
             @if (session()->has('success'))
-                <div class="mx-4 mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <div class="mx-4 mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                    role="alert">
                     <span class="block sm:inline">{{ session('success') }}</span>
                 </div>
             @endif
             @if (session()->has('error'))
-                <div class="mx-4 mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <div class="mx-4 mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                    role="alert">
                     <span class="block sm:inline">{{ session('error') }}</span>
                 </div>
             @endif
@@ -65,55 +68,78 @@
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NIM</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Program</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periode</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal Bayar</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cara Bayar</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penerima</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu Input</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bukti</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catatan</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tanggal</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                NIM</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nama</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Program</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Periode</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nominal Bayar</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cara Bayar</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Penerima</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Waktu Input</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Bukti</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Catatan</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($pembayarans as $p)
                             <tr class="hover:bg-gray-50" wire:key="pembayaran-{{ $p->id }}">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $p->tanggal_bayar->format('d/m/Y') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ $p->tanggal_bayar->format('d/m/Y') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $p->user->nim }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $p->user->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $p->user->programStudi->nama ?? '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ $p->user->programStudi->nama ?? '-' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @foreach ($p->tagihans as $t)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 mr-1 mb-1">
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 mr-1 mb-1">
                                             {{ $t->periode->kode }}
                                         </span>
                                     @endforeach
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp {{ number_format($p->jumlah, 0, ',', '.') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp
+                                    {{ number_format($p->jumlah, 0, ',', '.') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
                                         {{ $p->cara_bayar == 'transfer' ? 'bg-purple-100 text-purple-800' : ($p->cara_bayar == 'cash' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800') }}">
                                         {{ ucfirst($p->cara_bayar) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $p->penerima->name ?? '-' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $p->created_at->format('d/m/Y H:i') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ $p->penerima->name ?? '-' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ $p->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if ($p->status == 'menunggu')
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                             Menunggu
                                         </span>
                                     @elseif($p->status == 'disetujui')
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             Disetujui
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                             Ditolak
                                         </span>
                                     @endif
@@ -122,9 +148,13 @@
                                     @if ($p->bukti_pembayaran)
                                         <a href="{{ Storage::url($p->bukti_pembayaran) }}" target="_blank"
                                             class="text-blue-600 hover:text-blue-900 font-medium">
-                                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                </path>
                                             </svg>
                                             Lihat
                                         </a>
@@ -136,37 +166,42 @@
                                     {{ $p->catatan ? Str::limit($p->catatan, 30) : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap flex gap-2">
-                            @if ($p->status == 'menunggu')
-                                <button wire:click="approvePembayaran({{ $p->id }})"
-                                    class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm">
-                                    Setujui
-                                </button>
-                                <button wire:click="rejectPembayaran({{ $p->id }})"
-                                    class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm">
-                                    Tolak
-                                </button>
-                            @elseif($p->status == 'disetujui')
-                                @if ($p->kwitansi)
-                                    <a href="{{ Storage::url($p->kwitansi) }}" target="_blank"
-                                        class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm">
-                                        Kwitansi
-                                    </a>
-                                @endif
-                                <span class="text-green-600 text-sm">✓ Selesai</span>
-                            @else
-                                <span class="text-red-600 text-sm">✗ Ditolak</span>
-                                {{-- @if ($p->catatan)
-                                    <div class="text-xs text-gray-500 mt-1">{{ $p->catatan }}</div>
-                                @endif --}}
-                            @endif
-                        </td>
+                                    @if ($p->status == 'menunggu')
+                                        <button wire:click="approvePembayaran({{ $p->id }})"
+                                            class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm">
+                                            Setujui
+                                        </button>
+                                        <button wire:click="rejectPembayaran({{ $p->id }})"
+                                            class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm">
+                                            Tolak
+                                        </button>
+                                    @elseif($p->status == 'disetujui')
+                                        @if ($p->kwitansi)
+                                            <a href="{{ Storage::url($p->kwitansi) }}" target="_blank"
+                                                class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm inline-flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                                    </path>
+                                                </svg>
+                                                Download Kwitansi
+                                            </a>
+                                        @endif
+                                        <span class="text-green-600 text-sm">✓ Selesai</span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="13" class="px-6 py-4 text-center text-gray-500">
                                     <div class="flex flex-col items-center justify-center py-8">
-                                        <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        <svg class="w-12 h-12 text-gray-300 mb-4" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
                                         </svg>
                                         <p class="text-lg font-medium text-gray-900">Tidak ada data pembayaran</p>
                                         <p class="text-gray-500 mt-1">Mulai dengan menambahkan pembayaran baru</p>
@@ -242,7 +277,7 @@
                             <!-- Program Studi -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
-                                <input type="text" wire:model="program" readonly 
+                                <input type="text" wire:model="program" readonly
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none"
                                     value="{{ $program }}">
                             </div>
@@ -257,7 +292,8 @@
                                     <option value="">-- Pilih Tagihan --</option>
                                     @foreach ($tagihans as $t)
                                         <option value="{{ $t->id }}">
-                                            {{ $t->periode->kode }} - Sisa: Rp {{ number_format($t->sisa, 0, ',', '.') }}
+                                            {{ $t->periode->kode }} - Sisa: Rp
+                                            {{ number_format($t->sisa, 0, ',', '.') }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -269,7 +305,8 @@
                             <!-- Sisa Tagihan -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Sisa Tagihan</label>
-                                <input type="text" value="Rp {{ number_format($sisa_tagihan ?? 0, 0, ',', '.') }}" readonly
+                                <input type="text" value="Rp {{ number_format($sisa_tagihan ?? 0, 0, ',', '.') }}"
+                                    readonly
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none">
                             </div>
                         </div>
@@ -330,8 +367,10 @@
                                 Simpan Pembayaran
                             </span>
                             <span wire:loading wire:target="savePembayaran" class="flex items-center">
-                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor"
                                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                     </path>
@@ -347,7 +386,8 @@
 
     <!-- Modal untuk input catatan penolakan -->
     @if ($showRejectModal)
-        <div class="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50 transition-opacity duration-300">
+        <div
+            class="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50 transition-opacity duration-300">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 transform transition-all duration-300">
                 <div class="px-6 py-4 border-b">
                     <h3 class="text-lg font-semibold text-gray-800">Catatan Penolakan</h3>
@@ -355,7 +395,7 @@
                 <div class="px-6 py-4 space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Alasan Penolakan</label>
-                        <textarea wire:model="catatan_penolakan" 
+                        <textarea wire:model="catatan_penolakan"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 h-24"
                             placeholder="Masukkan alasan penolakan..."></textarea>
                     </div>
@@ -365,7 +405,7 @@
                         class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
                         Batal
                     </button>
-                    <button wire:click="confirmReject" 
+                    <button wire:click="confirmReject"
                         class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">
                         Tolak Pembayaran
                     </button>
@@ -379,7 +419,8 @@
         <div class="bg-white rounded-lg p-4 shadow-lg">
             <div class="flex items-center space-x-3">
                 <svg class="animate-spin h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                        stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor"
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                     </path>
