@@ -8,6 +8,7 @@ use App\Livewire\Admin\PembayaranTagihan;
 use App\Livewire\Admin\KelolaSPP;
 use App\Livewire\Admin\TagihanSPP;
 use App\Livewire\Admin\StatusMahasiswa;
+use App\Livewire\Users\TagihanUser;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -48,6 +49,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/administrasi/status-mahasiswa', StatusMahasiswa::class)
         ->name('admin.administrasi.status-mahasiswa')
         ->middleware('can:isAdmin');
+
+    // Routing untuk mahasiswa (user)
+    Route::get('/users/tagihan-user', TagihanUser::class)
+        ->name('users.tagihan-user')
+        ->middleware('can:isMahasiswa'); 
 });
 
 require __DIR__.'/auth.php';

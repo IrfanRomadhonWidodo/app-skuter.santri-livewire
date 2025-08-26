@@ -119,20 +119,64 @@
 
         {{-- Menu Kelola User sejajar --}}
         
-<flux:navlist.item 
-    icon="users" 
-    :href="route('admin.users')"
-    :current="request()->routeIs('admin.users')"
-    class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
-           data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
-           text-white rounded-lg">
-    {{ __('Kelola User') }}
-</flux:navlist.item>
+        <flux:navlist.item 
+            icon="users" 
+            :href="route('admin.users')"
+            :current="request()->routeIs('admin.users')"
+            class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
+                data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
+                text-white rounded-lg">
+            {{ __('Kelola User') }}
+        </flux:navlist.item>
 
 
-    </flux:navlist.group>
-    @endif
-</flux:navlist>
+                </flux:navlist.group>
+                @endif
+
+                @if(auth()->user()->role === 'mahasiswa')
+                    <flux:navlist.group :heading="__('Tagihan Saya')" class="grid">
+
+                        <flux:navlist.item 
+                            icon="layout-grid" 
+                            :href="route('users.tagihan-user')" 
+                            :current="request()->routeIs('users.tagihan-user')" 
+                            wire:navigate
+                            class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
+                                data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
+                                text-white rounded-lg">
+                            {{ __('Tagihan Saya') }}
+                        </flux:navlist.item>
+
+                        <flux:navlist.item 
+                            icon="credit-card" 
+                            href="#"
+                            class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
+                                data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
+                                text-white rounded-lg">
+                            {{ __('Pembayaran') }}
+                        </flux:navlist.item>
+
+                        <flux:navlist.item 
+                            icon="clock" 
+                            href="#"
+                            class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
+                                data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
+                                text-white rounded-lg">
+                            {{ __('Riwayat Pembayaran') }}
+                        </flux:navlist.item>
+
+                        <flux:navlist.item 
+                            icon="file-text" 
+                            href="#"
+                            class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
+                                data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
+                                text-white rounded-lg">
+                            {{ __('Penangguhan Bayar') }}
+                        </flux:navlist.item>
+
+                    </flux:navlist.group>
+                @endif
+            </flux:navlist>
 
 
             <flux:spacer />

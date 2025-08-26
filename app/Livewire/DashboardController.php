@@ -16,6 +16,6 @@ class DashboardController extends Component
         }
 
         // default ke mahasiswa
-        return view('livewire.user.dashboard');
+        return view('livewire.users.dashboard');
     }
 }

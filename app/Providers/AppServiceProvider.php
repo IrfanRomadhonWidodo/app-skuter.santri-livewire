@@ -27,5 +27,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('isAdmin', function (User $user) {
             return $user->role === 'admin';
         });
+
+        // Gate untuk mahasiswa
+        Gate::define('isMahasiswa', function (User $user) {
+            return $user->role === 'mahasiswa';
+        });
     }
 }
