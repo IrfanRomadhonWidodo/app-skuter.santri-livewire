@@ -24,6 +24,7 @@ class Pembayaran extends Model
         'status',
         'approved_at',
         'catatan',
+        'kelebihan_bayar', // Tambahan untuk tabungan
     ];
 
     protected $casts = [
@@ -66,6 +67,40 @@ class Pembayaran extends Model
             'penerima_id' => $adminId,
         ]);
 
+        // Update status tagihan dan hitung kelebihan
+        $totalJumlahBayar = $this->jumlah;
+        $kelebihanBayar = 0;
+
+        foreach ($this->tagihans as $tagihan) {
+            $nominalTeralokasi = $tagihan->pivot->nominal_teralokasi;
+            $tagihan->terbayar += $nominalTeralokasi;
+            
+            // Update sisa tagihan
+            $tagihan->sisa = $tagihan->total_tagihan - $tagihan->terbayar;
+            
+            // Update status tagihan
+            if ($tagihan->terbayar >= $tagihan->total_tagihan) {
+                $tagihan->status = 'lunas';
+                $tagihan->sisa = 0;
+                
+                // Hitung kelebihan jika ada
+                if ($tagihan->terbayar > $tagihan->total_tagihan) {
+                    $kelebihanBayar += $tagihan->terbayar - $tagihan->total_tagihan;
+                }
+            } elseif ($tagihan->terbayar > 0) {
+                $tagihan->status = 'parsial';
+            }
+            
+            $tagihan->save();
+        }
+
+        // Simpan kelebihan bayar jika ada
+        if ($kelebihanBayar > 0) {
+            $this->update(['kelebihan_bayar' => $kelebihanBayar]);
+            
+            // TODO: Bisa ditambahkan logika untuk simpan ke tabel tabungan mahasiswa
+        }
+
         // Generate kwitansi
         $kwitansiService = new KwitansiService();
         $kwitansiPath = $kwitansiService->generateKwitansi($this);
@@ -73,19 +108,6 @@ class Pembayaran extends Model
         $this->update([
             'kwitansi' => $kwitansiPath
         ]);
-
-        // Update status tagihan
-        foreach ($this->tagihans as $tagihan) {
-            $nominalTeralokasi = $tagihan->pivot->nominal_teralokasi;
-            $tagihan->terbayar += $nominalTeralokasi;
-
-            if ($tagihan->terbayar >= $tagihan->total_tagihan) {
-                $tagihan->status = 'lunas';
-            } else {
-                $tagihan->status = 'parsial';
-            }
-            $tagihan->save();
-        }
     }
 
     // Method untuk reject pembayaran

@@ -1,6 +1,7 @@
 {{-- filepath: resources/views/kwitansi/template.blade.php --}}
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Kwitansi Pembayaran</title>
@@ -11,105 +12,78 @@
             padding: 20px;
             font-size: 12px;
         }
-        
+
         .kwitansi-container {
             max-width: 800px;
             margin: 0 auto;
             border: 2px solid #000;
             padding: 20px;
         }
-        
+
         .header {
             text-align: center;
             margin-bottom: 30px;
             border-bottom: 2px solid #000;
             padding-bottom: 15px;
         }
-        
+
         .header h1 {
             margin: 0;
             font-size: 24px;
             font-weight: bold;
             text-transform: uppercase;
         }
-        
+
         .header h2 {
             margin: 5px 0;
             font-size: 18px;
             color: #666;
         }
-        
+
         .header p {
             margin: 2px 0;
             font-size: 11px;
         }
-        
-        .kwitansi-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        
-        .kwitansi-info div {
-            width: 48%;
-        }
-        
+
         .detail-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        
+
         .detail-table td {
             padding: 8px;
             vertical-align: top;
         }
-        
+
         .detail-table .label {
             width: 150px;
             font-weight: bold;
         }
-        
+
         .detail-table .colon {
             width: 20px;
             text-align: center;
         }
-        
+
         .amount-box {
             border: 1px solid #000;
             padding: 15px;
             margin: 20px 0;
             background-color: #f9f9f9;
         }
-        
+
         .amount-box .nominal {
             font-size: 16px;
             font-weight: bold;
             margin-bottom: 5px;
         }
-        
+
         .amount-box .terbilang {
             font-style: italic;
             text-transform: capitalize;
         }
-        
-        .signature-section {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-        }
-        
-        .signature-box {
-            width: 30%;
-            text-align: center;
-        }
-        
-        .signature-line {
-            border-top: 1px solid #000;
-            margin-top: 60px;
-            padding-top: 5px;
-        }
-        
+
         .footer {
             margin-top: 30px;
             border-top: 1px solid #ccc;
@@ -118,22 +92,58 @@
             font-size: 10px;
             color: #666;
         }
-        
+
         .watermark {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-45deg);
             font-size: 80px;
-            color: rgba(0, 0, 0, 0.1);
             z-index: -1;
             font-weight: bold;
         }
+
+        /* Status styling */
+        .status-lunas {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-parsial {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .status-belum-bayar {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Watermark styling berdasarkan status */
+        .watermark-lunas {
+            color: rgba(0, 128, 0, 0.1);
+        }
+
+        .watermark-parsial {
+            color: rgba(255, 165, 0, 0.1);
+        }
+
+        .watermark-belum-bayar {
+            color: rgba(255, 0, 0, 0.1);
+        }
     </style>
 </head>
+
 <body>
-    <div class="watermark">LUNAS</div>
-    
+    <!-- Watermark dinamis berdasarkan status -->
+    <div
+        class="watermark 
+        @if ($status_tagihan == 'LUNAS') watermark-lunas
+        @elseif($status_tagihan == 'PARSIAL') watermark-parsial
+        @else watermark-belum-bayar @endif">
+        {{ $status_tagihan }}
+    </div>
+
     <div class="kwitansi-container">
         <!-- Header -->
         <div class="header">
@@ -150,7 +160,13 @@
                 <strong>Tanggal:</strong> {{ $tanggal_cetak }}
             </div>
             <div style="display: table-cell; width: 50%; text-align: right;">
-                <strong>Status:</strong> <span style="color: green; font-weight: bold;">LUNAS</span>
+                <strong>Status:</strong>
+                <span
+                    class="@if ($status_tagihan == 'LUNAS') status-lunas
+                            @elseif($status_tagihan == 'PARSIAL') status-parsial
+                            @else status-belum-bayar @endif">
+                    {{ $status_tagihan }}
+                </span>
             </div>
         </div>
 
@@ -175,9 +191,19 @@
                 <td class="label">Untuk pembayaran</td>
                 <td class="colon">:</td>
                 <td>
-                    @foreach($pembayaran->tagihans as $tagihan)
+                    @foreach ($pembayaran->tagihans as $tagihan)
                         SPP {{ $tagihan->periode->kode }}
-                        @if(!$loop->last), @endif
+                        @if ($tagihan->status)
+                            <span
+                                class="@if ($tagihan->status == 'lunas') status-lunas
+                                        @elseif($tagihan->status == 'parsial') status-parsial
+                                        @else status-belum-bayar @endif">
+                                ({{ ucfirst($tagihan->status) }})
+                            </span>
+                        @endif
+                        @if (!$loop->last)
+                            ,
+                        @endif
                     @endforeach
                 </td>
             </tr>
@@ -192,6 +218,21 @@
                 <td>{{ $pembayaran->tanggal_bayar->format('d F Y') }}</td>
             </tr>
         </table>
+
+        <!-- Detail Tagihan (tambahan untuk info parsial) -->
+        @if ($status_tagihan == 'PARSIAL')
+            <div style="border: 1px solid #orange; padding: 10px; margin: 15px 0; background-color: #fff8e1;">
+                <strong>Detail Tagihan:</strong>
+                @foreach ($pembayaran->tagihans as $tagihan)
+                    <div style="margin: 5px 0;">
+                        {{ $tagihan->periode->kode }}:
+                        Rp {{ number_format($tagihan->terbayar, 0, ',', '.') }} /
+                        Rp {{ number_format($tagihan->total_tagihan, 0, ',', '.') }}
+                        (Sisa: Rp {{ number_format($tagihan->sisa, 0, ',', '.') }})
+                    </div>
+                @endforeach
+            </div>
+        @endif
 
         <!-- Nominal -->
         <div class="amount-box">
@@ -228,7 +269,13 @@
         <div class="footer">
             <p>Kwitansi ini sah dan dikeluarkan secara otomatis oleh sistem.</p>
             <p>Dicetak pada: {{ now()->format('d F Y H:i:s') }}</p>
+            @if ($status_tagihan == 'PARSIAL')
+                <p style="color: orange; font-weight: bold;">
+                    * Pembayaran sebagian - Silakan lakukan pembayaran sisa tagihan
+                </p>
+            @endif
         </div>
     </div>
 </body>
+
 </html>

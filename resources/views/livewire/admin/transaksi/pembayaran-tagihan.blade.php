@@ -62,6 +62,12 @@
                     <span class="block sm:inline">{{ session('error') }}</span>
                 </div>
             @endif
+            @if (session()->has('warning'))
+                <div class="mx-4 mt-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+                    role="alert">
+                    <span class="block sm:inline">{{ session('warning') }}</span>
+                </div>
+            @endif
 
             <!-- Tabel Pembayaran -->
             <div class="overflow-x-auto">
@@ -318,8 +324,14 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Nominal Bayar <span class="text-red-500">*</span>
                                 </label>
-                                <input type="number" wire:model="nominal_bayar" placeholder="Masukkan nominal"
+                                <input type="number" wire:model.lazy="nominal_bayar" placeholder="Masukkan nominal"
+                                    max="{{ $max_bayar }}"
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 @error('nominal_bayar') border-red-500 @enderror">
+                                @if ($max_bayar > 0)
+                                    <small class="text-gray-500 text-xs mt-1 block">
+                                        Maksimal: Rp {{ number_format($max_bayar, 0, ',', '.') }}
+                                    </small>
+                                @endif
                                 @error('nominal_bayar')
                                     <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                 @enderror

@@ -1,4 +1,5 @@
 <?php
+// filepath: app/Models/Tagihan.php
 
 namespace App\Models;
 
@@ -15,8 +16,12 @@ class Tagihan extends Model
         'user_id',
         'periode_id',
         'program_studi_id',
+        'nim',
+        'nama_mahasiswa',
+        'program',
         'total_tagihan',
         'terbayar',
+        'sisa',
         'status',
     ];
 
@@ -50,20 +55,26 @@ class Tagihan extends Model
             ->withTimestamps();
     }
 
-    // Helper sisa tagihan
+    // Helper sisa tagihan - real time calculation
     public function getSisaAttribute()
     {
         return $this->total_tagihan - $this->terbayar;
+    }
+
+    // Update sisa setelah pembayaran
+    public function updateSisa()
+    {
+        $this->sisa = $this->total_tagihan - $this->terbayar;
+        $this->save();
     }
 
     // Auto-generate tagihan untuk periode baru
     public static function generateForPeriode($periode)
     {
         $mahasiswas = User::where('role', 'mahasiswa')
-            ->where('program_studi_id', $periode->programStudi->id)
+            ->where('program_studi_id', $periode->program_studi_id)
             ->whereHas('mahasiswaStatus', fn($q) => $q->whereIn('status', ['aktif', 'cuti']))
             ->get();
-
 
         Log::info('Generate tagihan SPP', [
             'periode_id' => $periode->id,
@@ -77,9 +88,11 @@ class Tagihan extends Model
                 [
                     'nim' => $mhs->nim,
                     'nama_mahasiswa' => $mhs->name,
+                    'program' => $mhs->programStudi->nama ?? '-',
                     'program_studi_id' => $mhs->program_studi_id,
                     'total_tagihan' => $periode->nominal_awal,
                     'terbayar' => 0,
+                    'sisa' => $periode->nominal_awal,
                     'status' => null,
                 ]
             );

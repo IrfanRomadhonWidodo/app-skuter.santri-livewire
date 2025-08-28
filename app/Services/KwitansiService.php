@@ -1,5 +1,4 @@
 <?php
-// filepath: app/Services/KwitansiService.php
 
 namespace App\Services;
 
@@ -11,12 +10,16 @@ class KwitansiService
 {
     public function generateKwitansi(Pembayaran $pembayaran)
     {
+        // Tentukan status berdasarkan tagihan
+        $status = $this->getStatusTagihan($pembayaran);
+        
         // Data untuk kwitansi
         $data = [
             'pembayaran' => $pembayaran,
             'nomor_kwitansi' => $this->generateNomorKwitansi($pembayaran),
             'tanggal_cetak' => now()->format('d F Y'),
             'terbilang' => $this->terbilang($pembayaran->jumlah),
+            'status_tagihan' => $status, // Tambahan status tagihan
         ];
 
         // Generate PDF
@@ -30,6 +33,29 @@ class KwitansiService
         Storage::disk('public')->put($fileName, $pdf->output());
         
         return $fileName;
+    }
+
+    private function getStatusTagihan($pembayaran)
+    {
+        $allLunas = true;
+        $hasPayment = false;
+
+        foreach ($pembayaran->tagihans as $tagihan) {
+            $hasPayment = true;
+            
+            // Refresh data tagihan untuk memastikan status terbaru
+            $tagihan->refresh();
+            
+            if ($tagihan->status !== 'lunas') {
+                $allLunas = false;
+            }
+        }
+
+        if (!$hasPayment) {
+            return 'BELUM BAYAR';
+        }
+
+        return $allLunas ? 'LUNAS' : 'PARSIAL';
     }
 
     private function generateNomorKwitansi(Pembayaran $pembayaran)

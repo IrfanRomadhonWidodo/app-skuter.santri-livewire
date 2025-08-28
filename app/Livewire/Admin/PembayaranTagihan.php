@@ -1,4 +1,5 @@
 <?php
+// filepath: app/Livewire/Admin/PembayaranTagihan.php
 
 namespace App\Livewire\Admin;
 
@@ -18,9 +19,11 @@ class PembayaranTagihan extends Component
 
     protected $paginationTheme = 'tailwind';
     public $showModal = false;
+    
     // Form fields
     public $tanggal_bayar, $nim, $user_id, $nama_mahasiswa, $program, $tagihan_id;
     public $sisa_tagihan, $nominal_bayar, $cara_bayar, $bukti_pembayaran;
+    public $max_bayar = 0; // Batas maksimal bayar
 
     public $search = '', $filterStatus = '', $filterTanggal = '';
 
@@ -41,14 +44,14 @@ class PembayaranTagihan extends Component
      */
     public function updatedNim($value)
     {
-        $user = User::with(['programStudi', 'tagihans'])->where('nim', $value)->first();
+        $user = User::with(['programStudi'])->where('nim', $value)->first();
 
         if ($user) {
             $this->user_id = $user->id;
             $this->nama_mahasiswa = $user->name;
             $this->program = $user->programStudi ? $user->programStudi->nama : '-';
 
-            // Ambil semua tagihan mahasiswa ini yang belum lunas dan program studinya sesuai
+            // Ambil semua tagihan mahasiswa ini yang belum lunas
             $this->tagihans = Tagihan::with(['periode.programStudi'])
                 ->where('user_id', $user->id)
                 ->whereHas('periode', function ($q) use ($user) {
@@ -60,9 +63,6 @@ class PembayaranTagihan extends Component
                 })
                 ->get();
 
-            Log::info('Tagihan retrieved for user: ' . $user->id, [
-                'tagihans' => $this->tagihans
-            ]);
         } else {
             $this->reset(['user_id', 'nama_mahasiswa', 'program']);
             $this->tagihans = collect();
@@ -70,12 +70,29 @@ class PembayaranTagihan extends Component
     }
 
     /**
-     * Ketika jenis tagihan dipilih, tampilkan sisa tagihan
+     * Ketika jenis tagihan dipilih, tampilkan sisa tagihan dan set maksimal bayar
      */
     public function updatedTagihanId($value)
     {
         $tagihan = Tagihan::find($value);
-        $this->sisa_tagihan = $tagihan?->sisa ?? 0;
+        if ($tagihan) {
+            $this->sisa_tagihan = $tagihan->sisa;
+            $this->max_bayar = $tagihan->sisa; // Set batas maksimal sesuai sisa tagihan
+        } else {
+            $this->sisa_tagihan = 0;
+            $this->max_bayar = 0;
+        }
+    }
+
+    /**
+     * Validasi nominal bayar tidak melebihi sisa tagihan
+     */
+    public function updatedNominalBayar($value)
+    {
+        if ($value > $this->max_bayar) {
+            $this->nominal_bayar = $this->max_bayar;
+            session()->flash('warning', 'Nominal bayar tidak boleh melebihi sisa tagihan (Rp ' . number_format($this->max_bayar, 0, ',', '.') . ')');
+        }
     }
 
     /**
@@ -87,9 +104,16 @@ class PembayaranTagihan extends Component
             'tanggal_bayar' => 'required|date',
             'user_id' => 'required|exists:users,id',
             'tagihan_id' => 'required|exists:tagihans,id',
-            'nominal_bayar' => 'required|numeric|min:1',
+            'nominal_bayar' => [
+                'required',
+                'numeric',
+                'min:1',
+                'max:' . $this->max_bayar // Validasi maksimal sesuai sisa tagihan
+            ],
             'cara_bayar' => 'required|in:transfer,cash,alokasi',
             'bukti_pembayaran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ], [
+            'nominal_bayar.max' => 'Nominal bayar tidak boleh melebihi sisa tagihan (Rp ' . number_format($this->max_bayar, 0, ',', '.') . ')',
         ]);
 
         DB::beginTransaction();
@@ -109,7 +133,7 @@ class PembayaranTagihan extends Component
 
             // Alokasi tagihan
             $tagihan = Tagihan::find($this->tagihan_id);
-            $alokasi = min($this->nominal_bayar, $tagihan->total_tagihan - $tagihan->terbayar);
+            $alokasi = min($this->nominal_bayar, $tagihan->sisa);
 
             $pembayaran->tagihans()->attach($tagihan->id, [
                 'nominal_teralokasi' => $alokasi
@@ -137,7 +161,7 @@ class PembayaranTagihan extends Component
             $pembayaran->approve(Auth::id());
 
             DB::commit();
-            session()->flash('success', 'Pembayaran berhasil disetujui.');
+            session()->flash('success', 'Pembayaran berhasil disetujui dan kwitansi telah dibuat.');
         } catch (\Throwable $e) {
             DB::rollBack();
             session()->flash('error', 'Gagal menyetujui pembayaran: ' . $e->getMessage());
@@ -152,7 +176,6 @@ class PembayaranTagihan extends Component
         $this->rejectPembayaranId = $id;
         $this->catatan_penolakan = '';
         $this->showRejectModal = true;
-
     }
 
     public function confirmReject()
@@ -166,18 +189,13 @@ class PembayaranTagihan extends Component
             DB::commit();
             $this->showRejectModal = false;
             $this->catatan_penolakan = '';
-            Log::info('Rejecting pembayaran ID: ' . $this->rejectPembayaranId, [
-                'catatan_penolakan' => $this->catatan_penolakan
-            ]);
             session()->flash('success', 'Pembayaran berhasil ditolak.');
         } catch (\Throwable $e) {
             DB::rollBack();
             session()->flash('error', 'Gagal menolak pembayaran: ' . $e->getMessage());
-            Log::error('Error rejecting pembayaran ID: ' . $this->rejectPembayaranId, [
-                'error' => $e->getMessage()
-            ]);
         }
     }
+
     public function showCreateModal()
     {
         $this->resetForm();
@@ -189,6 +207,7 @@ class PembayaranTagihan extends Component
         $this->showModal = false;
         $this->resetForm();
     }
+
     /**
      * Reset form input
      */
@@ -202,6 +221,7 @@ class PembayaranTagihan extends Component
         $this->tagihan_id = null;
         $this->sisa_tagihan = null;
         $this->nominal_bayar = null;
+        $this->max_bayar = 0;
         $this->cara_bayar = null;
         $this->bukti_pembayaran = null;
         $this->tagihans = collect();
@@ -212,7 +232,7 @@ class PembayaranTagihan extends Component
      */
     public function render()
     {
-        $query = Pembayaran::with(['user', 'penerima', 'tagihans.periode.programStudi']);
+        $query = Pembayaran::with(['user.programStudi', 'penerima', 'tagihans.periode.programStudi']);
 
         if ($this->search) {
             $query->whereHas('user', fn($q) => $q->where('name', 'like', '%' . $this->search . '%')
