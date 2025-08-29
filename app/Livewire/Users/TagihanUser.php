@@ -102,13 +102,18 @@ class TagihanUser extends Component
         $tagihan = Tagihan::with(['periode.programStudi', 'mahasiswa'])
             ->where('user_id', $userId)
             ->when($this->search, function ($query) {
-                $query->whereHas('periode', function ($q) {
-                    $q->where('nama_periode', 'like', '%' . $this->search . '%');
-                })
-                ->orWhereHas('periode.programStudi', function ($q) {
-                    $q->where('nama_program_studi', 'like', '%' . $this->search . '%');
-                });
-            })
+    $search = $this->search;
+
+    $query->whereHas('periode', function ($q) use ($search) {
+        $q->where('nama_periode', 'like', "%{$search}%")
+          ->orWhere('tahun_ajaran', 'like', "%{$search}%")
+          ->orWhere('semester', 'like', "%{$search}%");
+    })
+    ->orWhereHas('periode.programStudi', function ($q) use ($search) {
+        $q->where('nama_program_studi', 'like', "%{$search}%");
+    });
+})
+
             ->when($this->statusFilter, function ($query) {
                 if ($this->statusFilter == 'lunas') {
                     $query->whereRaw('terbayar >= total_tagihan');
