@@ -149,7 +149,9 @@
 
                         <flux:navlist.item 
                             icon="credit-card" 
-                            href="#"
+                            :href="route('users.pembayaran-user')" 
+                            :current="request()->routeIs('users.pembayaran-user')" 
+                            wire:navigate
                             class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
                                 data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
                                 text-white rounded-lg">
@@ -158,7 +160,9 @@
 
                         <flux:navlist.item 
                             icon="clock" 
-                            href="#"
+                            :href="route('users.riwayat-user')" 
+                            :current="request()->routeIs('users.riwayat-user')" 
+                            wire:navigate
                             class="hover:bg-gradient-to-r hover:from-green-900 hover:to-green-700 
                                 data-[current]:bg-gradient-to-r data-[current]:from-green-900 data-[current]:to-green-700 
                                 text-white rounded-lg">

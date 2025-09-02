@@ -80,7 +80,7 @@
                 <select wire:model.live="statusFilter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                     <option value="">Semua Status</option>
                     <option value="belum_bayar">Belum Bayar</option>
-                    <option value="sebagian">Alokasi</option>
+                    <option value="alokasi">Alokasi</option>
                     <option value="lunas">Lunas</option>
                 </select>
             </div>
@@ -103,7 +103,6 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Terbayar</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sisa</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -115,14 +114,14 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">
-                                    {{ $item->periode->nama_periode ?? 'N/A' }}
+                                    {{ $item->periode->kode?? 'N/A' }}
                                 </div>
                                 <div class="text-sm text-gray-500">
                                     {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $item->periode->programStudi->nama_program_studi ?? 'N/A' }}
+                                {{ $item->periode->programStudi->nama ?? 'N/A' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 Rp {{ number_format($item->total_tagihan, 0, ',', '.') }}
@@ -138,13 +137,7 @@
                                     {{ $statusBadge['text'] }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button 
-                                    wire:click="showDetail({{ $item->id }})"
-                                    class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors">
-                                    Detail
-                                </button>
-                            </td>
+
                         </tr>
                     @empty
                         <tr>
@@ -195,12 +188,12 @@
                         <dl class="space-y-4">
                             <div>
                                 <dt class="text-sm font-medium text-gray-500">Periode</dt>
-                                <dd class="text-lg text-gray-900">{{ $selectedTagihan->periode->nama_periode ?? 'N/A' }}</dd>
+                                <dd class="text-lg text-gray-900">{{ $selectedTagihan->periode->kode ?? 'N/A' }}</dd>
                             </div>
                             
                             <div>
                                 <dt class="text-sm font-medium text-gray-500">Program Studi</dt>
-                                <dd class="text-lg text-gray-900">{{ $selectedTagihan->periode->programStudi->nama_program_studi ?? 'N/A' }}</dd>
+                                <dd class="text-lg text-gray-900">{{ $selectedTagihan->periode->programStudi->nama ?? 'N/A' }}</dd>
                             </div>
                             
                             <div class="border-t pt-4">

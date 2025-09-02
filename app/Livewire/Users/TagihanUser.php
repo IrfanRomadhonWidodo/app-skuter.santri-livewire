@@ -33,7 +33,8 @@ class TagihanUser extends Component
      */
     public function showDetail($tagihanId)
     {
-        $this->selectedTagihan = Tagihan::with(['periode.programStudi', 'mahasiswa'])
+        $this->selectedTagihan = Tagihan::with(['periode.programStudi', 'mahasiswa', 'programStudi'])
+
             ->where('id', $tagihanId)
             ->where('user_id', Auth::id())
             ->first();
@@ -88,7 +89,7 @@ class TagihanUser extends Component
         if ($sisa <= 0) {
             return ['text' => 'Lunas', 'class' => 'bg-green-100 text-green-800'];
         } elseif ($tagihan->terbayar > 0) {
-            return ['text' => 'Sebagian', 'class' => 'bg-yellow-100 text-yellow-800'];
+            return ['text' => 'Alokasi', 'class' => 'bg-yellow-100 text-yellow-800'];
         } else {
             return ['text' => 'Belum Bayar', 'class' => 'bg-red-100 text-red-800'];
         }
@@ -105,21 +106,21 @@ class TagihanUser extends Component
     $search = $this->search;
 
     $query->whereHas('periode', function ($q) use ($search) {
-        $q->where('nama_periode', 'like', "%{$search}%")
-          ->orWhere('tahun_ajaran', 'like', "%{$search}%")
-          ->orWhere('semester', 'like', "%{$search}%");
+        $q->where('kode', 'like', "%{$search}%")
+        ->orWhere('periode_mulai', 'like', "%{$search}%")
+        ->orWhere('periode_selesai', 'like', "%{$search}%");
     })
     ->orWhereHas('periode.programStudi', function ($q) use ($search) {
-        $q->where('nama_program_studi', 'like', "%{$search}%");
+        $q->where('nama', 'like', "%{$search}%");
     });
-})
+    })
 
             ->when($this->statusFilter, function ($query) {
                 if ($this->statusFilter == 'lunas') {
                     $query->whereRaw('terbayar >= total_tagihan');
                 } elseif ($this->statusFilter == 'belum_bayar') {
                     $query->where('terbayar', 0);
-                } elseif ($this->statusFilter == 'sebagian') {
+                } elseif ($this->statusFilter == 'alokasi') {
                     $query->where('terbayar', '>', 0)
                           ->whereRaw('terbayar < total_tagihan');
                 }

@@ -9,6 +9,9 @@ use App\Livewire\Admin\KelolaSPP;
 use App\Livewire\Admin\TagihanSPP;
 use App\Livewire\Admin\StatusMahasiswa;
 use App\Livewire\Users\TagihanUser;
+use App\Livewire\Users\PembayaranUser;
+use App\Livewire\Users\RiwayatUser;
+use App\Livewire\Users\PenangguhanUser;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -54,6 +57,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/tagihan-user', TagihanUser::class)
         ->name('users.tagihan-user')
         ->middleware('can:isMahasiswa'); 
+    
+    // Routing untuk pembayaran user (mahasiswa)
+    Route::get('/users/pembayaran-user', PembayaranUser::class)
+        ->name('users.pembayaran-user')
+        ->middleware('can:isMahasiswa');
+
+    // Routing untuk pembayaran user (mahasiswa)
+    Route::get('/users/riwayat-user', RiwayatUser::class)
+        ->name('users.riwayat-user')
+        ->middleware('can:isMahasiswa');
+
+    // Routing untuk pembayaran user (mahasiswa)
+    Route::get('/users/penangguhan-user', PenangguhanUser::class)
+        ->name('users.penagguhan-user')
+        ->middleware('can:isMahasiswa');
+
 });
 
 require __DIR__.'/auth.php';
