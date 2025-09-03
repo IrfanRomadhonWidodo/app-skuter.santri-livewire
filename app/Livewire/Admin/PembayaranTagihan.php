@@ -142,10 +142,14 @@ class PembayaranTagihan extends Component
             DB::commit();
             $this->showModal = false;
             $this->resetForm();
-            session()->flash('success', 'Pembayaran berhasil ditambahkan dan menunggu persetujuan.');
+            $this->dispatch('showSuccessMessage', [
+                'message' => 'Pembayaran berhasil ditambahkan dan menunggu persetujuan.'
+            ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            session()->flash('error', 'Gagal menyimpan pembayaran: ' . $e->getMessage());
+                $this->dispatch('showErrorMessage', [
+                    'message' => 'Gagal menyimpan pembayaran: ' . $e->getMessage()
+                ]);
         }
     }
 
@@ -161,10 +165,14 @@ class PembayaranTagihan extends Component
             $pembayaran->approve(Auth::id());
 
             DB::commit();
-            session()->flash('success', 'Pembayaran berhasil disetujui dan kwitansi telah dibuat.');
+            $this->dispatch('showSuccessMessage', [
+                'message' => 'Pembayaran berhasil disetujui dan kwitansi telah dibuat.'
+            ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            session()->flash('error', 'Gagal menyetujui pembayaran: ' . $e->getMessage());
+            $this->dispatch('showErrorMessage', [
+                'message' => 'Gagal menyetujui pembayaran: ' . $e->getMessage()
+            ]);
         }
     }
 
@@ -189,10 +197,15 @@ class PembayaranTagihan extends Component
             DB::commit();
             $this->showRejectModal = false;
             $this->catatan_penolakan = '';
-            session()->flash('success', 'Pembayaran berhasil ditolak.');
+
+            $this->dispatch('showSuccessMessage', [
+                'message' => 'Pembayaran berhasil ditolak.'
+            ]);
         } catch (\Throwable $e) {
-            DB::rollBack();
-            session()->flash('error', 'Gagal menolak pembayaran: ' . $e->getMessage());
+             DB::rollBack();
+            $this->dispatch('showErrorMessage', [
+                'message' => 'Gagal menolak pembayaran: ' . $e->getMessage()
+            ]);
         }
     }
 

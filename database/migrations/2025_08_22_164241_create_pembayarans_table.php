@@ -20,9 +20,11 @@ return new class extends Migration
                   ->cascadeOnDelete();
 
             $table->foreignId('penerima_id') // petugas/admin yang menerima
-                  ->constrained('users')
-                  ->cascadeOnUpdate()
-                  ->restrictOnDelete();
+                ->nullable()
+                ->constrained('users')
+                ->cascadeOnUpdate()
+                ->nullOnDelete();
+
 
             $table->date('tanggal_bayar')->nullable(); // dari form
             $table->decimal('jumlah', 15, 2); // berapa yang disetor user (parsial boleh)
