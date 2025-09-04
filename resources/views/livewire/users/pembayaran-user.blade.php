@@ -215,24 +215,7 @@
                                     @enderror
                                 </div>
 
-                                {{-- <!-- Sisa Tagihan Display -->
-                                @if ($sisa_tagihan)
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                            <span class="flex items-center">
-                                                <svg class="w-4 h-4 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.767 0L3.047 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                                                </svg>
-                                                Sisa Tagihan
-                                            </span>
-                                        </label>
-                                        <div class="bg-orange-50 border-2 border-orange-200 rounded-xl px-4 py-3">
-                                            <div class="text-xl font-bold text-orange-800">
-                                                Rp {{ number_format($sisa_tagihan, 0, ',', '.') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif --}}
+                                
 
                                 <!-- Nominal Bayar -->
                                 <div>
